@@ -1,0 +1,38 @@
+{
+  "name": "backbone.cycle",
+  "version": "0.1.0",
+  "homepage": "https://github.com/hashchange/backbone.cycle",
+  "authors": [
+    "Michael Heim <heim@zeilenwechsel.de>"
+  ],
+  "description": "Navigating and selecting Backbone Models and Collections.",
+  "main": "dist/backbone.cycle.js",
+  "keywords": [
+    "backbone",
+    "picky",
+    "selection",
+    "models",
+    "collections"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "public",
+    "reports",
+    "spec",
+    "src"
+  ],
+  "devDependencies": {
+    "squire": "*"
+  },
+  "dependencies": {
+    "requirejs": "~2.1.9",
+    "underscore": "~1.5.2",
+    "backbone": "~1.1.0",
+    "backbone.picky": "hashchange/backbone.picky#985946a714a9f1c3231c7750d373f2c240d8577b"
+  }
+}
