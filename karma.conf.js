@@ -1,6 +1,11 @@
 // Karma configuration
 // Generated on Mon Dec 30 2013 16:14:03 GMT+0100 (CET)
 
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// + For automated testing with Grunt, some settings in this config file  +
+// + are overridden in Gruntfile.js. Check both locations.                +
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 module.exports = function(config) {
   config.set({
 
@@ -10,7 +15,7 @@ module.exports = function(config) {
 
     // frameworks to use
     //
-    // Also available for chai (installed with karma-chai-plugins):
+    // Available for chai (installed with karma-chai-plugins):
     // sinon-chai, chai-as-promised, chai-jquery. Enable as needed.
     frameworks: ['mocha', 'chai', 'sinon-chai'],
 

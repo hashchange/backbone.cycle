@@ -82,7 +82,7 @@ A handful of commands manage everything for you:
 - Build continuously on every save with `grunt ci`.
 - Change the version number throughout the project with `grunt setver --to=1.2.3`. (Remember to rebuild the project with `grunt` afterwards.)
 
-Finally, if need be, you can set up a quick demo page to play with the code. First, edit the files in the `demo` directory. Then display `demo/index.html`, live-reloading your changes to the code or the page, with `grunt demo`. Libraries needed for the demo/playground should go into the Bower dev dependencies.
+Finally, if need be, you can set up a quick demo page to play with the code. First, edit the files in the `demo` directory. Then display `demo/index.html`, live-reloading your changes to the code or the page, with `grunt demo`. Libraries needed for the demo/playground should go into the Bower dev dependencies, in the project-wide `bower.json`, or else be managed by the dedicated `bower.json` in the demo directory.
 
 _The `grunt interactive` and `grunt demo` commands spin up a web server, opening up the whole project to access via http. By default, that access is restricted to localhost. You can relax the restriction it in `Gruntfile.js`, but be aware of the security implications._
 
