@@ -8,14 +8,14 @@
     <title>Memory Leak Test - Demos and Playground</title>
 
     <!-- ATTN Foundation loaded without JS - stay clear of JS-driven widgets, or add the JS setup -->
-    <link rel="stylesheet" href="bower_demo_components/foundation/css/normalize.css">
-    <link rel="stylesheet" href="bower_demo_components/foundation/css/foundation.css">
+    <link rel="stylesheet" href="../bower_demo_components/foundation/css/normalize.css">
+    <link rel="stylesheet" href="../bower_demo_components/foundation/css/foundation.css">
 
     <link rel="stylesheet" href="memtest.css">
 </head>
 <body>
     <!-- check that 'bower install' has been run in the demo dir if bower.json isn't empty -->
-    <script src="bower-check.js"></script>
+    <script src="../bower-check.js"></script>
 
     <!-- body content here... -->
     <section>
@@ -97,23 +97,23 @@
     </section>
     
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
-    <script src="bower_demo_components/jquery/jquery.js"></script>
-    <script src="../bower_components/underscore/underscore.js"></script>
-    <script src="../bower_components/backbone/backbone.js"></script>
-    <script src="bower_demo_components/backbone.picky.old/lib/backbone.picky.js"></script>
+    <script src="../bower_demo_components/jquery/jquery.js"></script>
+    <script src="../../bower_components/underscore/underscore.js"></script>
+    <script src="../../bower_components/backbone/backbone.js"></script>
+    <script src="../bower_demo_components/backbone.picky.old/lib/backbone.picky.js"></script>
     <script>
         Backbone.Old = {};
         Backbone.Old.Picky = Backbone.Picky;
         delete Backbone.Picky;
     </script>
-    <script src="../bower_components/backbone.picky/lib/backbone.picky.js"></script>
+    <script src="../../bower_components/backbone.picky/lib/backbone.picky.js"></script>
 
     <!-- include project source files here... -->
-    <script src="../src/backbone.cycle.js"></script>
+    <script src="../../src/backbone.cycle.js"></script>
 
     <!-- demo js here... -->
     <script src="memtest.js"></script>
-    <script src="demo.js"></script>
+    <script src="../demo.js"></script>
 
 </body>
 </html>

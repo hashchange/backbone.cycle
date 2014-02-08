@@ -9,7 +9,7 @@
 ( function ( window ) {
     "use strict";
 
-    var BOWER_DEMO_COMPONENTS_DIR = "bower_demo_components",
+    var BOWER_DEMO_COMPONENTS_DIR = "/demo/bower_demo_components",
 
         msg = "<div class='panel callout row'>" +
               "<p>Bower components for the demo seem to be missing. Install them first:</p>" +
@@ -21,7 +21,7 @@
               "disable the check by removing bower-check.js at the top of the &lt;body&gt;.</p>" +
               "</div>";
 
-    getJSON( "bower.json", false, function ( data ) {
+    getJSON( "/demo/bower.json", false, function ( data ) {
 
         var i, j, depNames,
             exists = false,

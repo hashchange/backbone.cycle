@@ -1,6 +1,6 @@
 requirejs.config( {
 
-    baseUrl: '../bower_components',
+    baseUrl: '../../bower_components',
 
     paths: {
         'jquery': '../demo/bower_demo_components/jquery/jquery',
