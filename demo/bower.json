@@ -23,6 +23,7 @@
   "dependencies": {
     "jquery": "~2.1.0",
     "backbone.picky.old": "backbone.picky#0.2.0",
-    "foundation": "~5.0.3"
+    "requirejs": "~2.1.10",
+    "foundation": "~5.1.1"
   }
 }

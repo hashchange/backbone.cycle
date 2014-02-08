@@ -26,11 +26,8 @@
     "spec",
     "src"
   ],
-  "devDependencies": {
-    "squire": "*"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "requirejs": "~2.1.9",
     "underscore": "~1.5.2",
     "backbone": "~1.1.0",
     "backbone.picky": "hashchange/backbone.picky#985946a714a9f1c3231c7750d373f2c240d8577b"
