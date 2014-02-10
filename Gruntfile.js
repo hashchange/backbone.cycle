@@ -8,7 +8,8 @@ module.exports = function(grunt) {
         'demo/*',
         'spec/*',
         'src/*'
-      ];
+      ],
+      SINON_SOURCE_DIR = 'node_modules/karma-chai-plugins/node_modules/sinon/lib/sinon/';
 
   // Project configuration.
   grunt.config.init({
@@ -107,20 +108,38 @@ module.exports = function(grunt) {
       options: {
         startTag: '<!--SCRIPTS-->',
         endTag: '<!--SCRIPTS END-->',
-        fileTmpl: '<script src="%s"></script>',
+        fileTmpl: '<script src="../%s"></script>',
         // relative doesn't seem to have any effect, ever
         relative: true,
         // appRoot is a misnomer for "strip out this prefix from the file path before inserting",
         // should be stripPrefix
         appRoot: ''
       },
-      interactive: {
+      interactive_spec: {
         options: {
-          fileTmpl: '<script src="../%s"></script>'
+          startTag: '<!--SPEC SCRIPTS-->',
+          endTag: '<!--SPEC SCRIPTS END-->'
         },
         files: {
-          // files are changed in place; for generating copies, run preprocess first
-          'web-mocha/index.html': ['spec/**.*.js']
+          // the target file is changed in place; for generating copies, run preprocess first
+          'web-mocha/index.html': ['spec/**/*.+(spec|test).js']
+        }
+      },
+      interactive_sinon: {
+        options: {
+          startTag: '<!--SINON COMPONENT SCRIPTS-->',
+          endTag: '<!--SINON COMPONENT SCRIPTS END-->'
+        },
+        files: {
+          // the target file is changed in place; for generating copies, run preprocess first
+          //
+          // mock.js must be loaded last (specifically, after spy.js). For the pattern achieving it, see
+          // http://gruntjs.com/configuring-tasks#globbing-patterns
+          'web-mocha/index.html': [
+            SINON_SOURCE_DIR + '**/*.js',
+            '!' + SINON_SOURCE_DIR + 'mock.js',
+            SINON_SOURCE_DIR + 'mock.js'
+          ]
         }
       }
     },
@@ -199,7 +218,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
 
   grunt.registerTask('test', ['jshint', 'karma:test']);
-  grunt.registerTask('interactive', ['preprocess:interactive', 'sails-linker:interactive', 'connect:test', 'watch:livereload']);
+  grunt.registerTask('interactive', ['preprocess:interactive', 'sails-linker:interactive_sinon', 'sails-linker:interactive_spec', 'connect:test', 'watch:livereload']);
   grunt.registerTask('demo', ['connect:demo', 'watch:livereload']);
   grunt.registerTask('build', ['jshint', 'karma:build', 'preprocess:build', 'concat', 'uglify']);
   grunt.registerTask('ci', ['watch:build']);

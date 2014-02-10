@@ -23,6 +23,9 @@
     "tests",
     "public",
     "reports",
+    "demo",
+    "lib-other",
+    "web-mocha",
     "spec",
     "src"
   ],

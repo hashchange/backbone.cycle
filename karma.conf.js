@@ -17,6 +17,8 @@ module.exports = function(config) {
     //
     // Available for chai (installed with karma-chai-plugins):
     // sinon-chai, chai-as-promised, chai-jquery. Enable as needed.
+    //
+    // NB sinon-chai includes Sinon; chai-jquery does _not_ include jQuery
     frameworks: ['mocha', 'chai', 'sinon-chai'],
 
 
@@ -33,7 +35,7 @@ module.exports = function(config) {
       'src/backbone.cycle.js',
 
       // Tests
-      'spec/*.spec.js'
+      'spec/**/*.+(spec|test).js'
     ],
 
 
