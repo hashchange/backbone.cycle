@@ -124,7 +124,7 @@
                 // With model-sharing mode off, and nothing listening to remove events (selectIfRemoved is "none"),
                 // the removal won't be detected. The onus is on the calling code to handle it correctly.
 
-                // NB No need to test this with model-sharing mode enabled. That case is handled by Backbone.Picky
+                // NB No need to test this with model-sharing mode enabled. That case is handled by Backbone.Select
                 // anyway, and tested there.
 
                 it( 'the removed model is NOT deselected', function () {

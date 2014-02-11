@@ -28,8 +28,8 @@
                 <fieldset id="testTypes" class="large-3 medium-4 columns">
                     <legend>Component</legend>
                     <div><input type="radio" id="backboneTest" name="testType" value="backbone"><label for="backboneTest">Backbone</label></div>
-                    <div><input type="radio" id="pickyOldTest" name="testType" value="picky.old"><label for="pickyOldTest">Backbone.Picky, 0.2.0</label></div>
-                    <div><input type="radio" id="pickyTest" name="testType" value="picky"><label for="pickyTest">Backbone.Picky, edge</label></div>
+                    <div><input type="radio" id="pickyTest" name="testType" value="picky"><label for="pickyTest">Backbone.Picky</label></div>
+                    <div><input type="radio" id="selectTest" name="testType" value="select"><label for="selectTest">Backbone.Select</label></div>
                     <div><input type="radio" id="cycleTest" name="testType" value="cycle" checked><label for="cycleTest">Backbone.Cycle</label></div>
                 </fieldset>
 
@@ -100,13 +100,8 @@
     <script src="../bower_demo_components/jquery/jquery.js"></script>
     <script src="../../bower_components/underscore/underscore.js"></script>
     <script src="../../bower_components/backbone/backbone.js"></script>
-    <script src="../bower_demo_components/backbone.picky.old/lib/backbone.picky.js"></script>
-    <script>
-        Backbone.Old = {};
-        Backbone.Old.Picky = Backbone.Picky;
-        delete Backbone.Picky;
-    </script>
-    <script src="../../bower_components/backbone.picky/lib/backbone.picky.js"></script>
+    <script src="../bower_demo_components/backbone.picky/lib/backbone.picky.js"></script>
+    <script src="../../bower_components/backbone.select/lib/backbone.select.js"></script>
 
     <!-- include project source files here... -->
     <script src="../../src/backbone.cycle.js"></script>

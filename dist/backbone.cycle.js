@@ -101,12 +101,12 @@
     /**
      * Backbone.Cycle.SelectableModel
      *
-     * A constructor-based mixin. Also includes Backbone.Picky.Selectable, no need to apply it separately. For setup,
-     * apply the mixin to a host object with `Backbone.Cycle.SelectableModel.applyTo( hostObject );`.
+     * A constructor-based mixin. Also includes Backbone.Select.Me, no need to apply it separately. For setup, apply the
+     * mixin to a host object with `Backbone.Cycle.SelectableModel.applyTo( hostObject );`.
      *
      * @class   {Backbone.Cycle.SelectableModel}
      * @extends {Backbone.Cycle.Model}
-     * @extends {Backbone.Picky.Selectable}
+     * @extends {Backbone.Select.Me}
      * @extends {Backbone.Model}
      */
     Backbone.Cycle.SelectableModel = function () {};
@@ -116,14 +116,14 @@
     /**
      * Class method setting up a host object with the SelectableModel mixin.
      *
-     * Backbone.Cycle.SelectableModel requires Backbone.Picky. Therefore, it extends the host object with
-     * Picky.Selectable in the process (no need to apply Picky.Selectable separately).
+     * Backbone.Cycle.SelectableModel requires Backbone.Select. Therefore, it extends the host object with
+     * Backbone.Select.Me in the process (no need to apply Select.Me separately).
      *
      * @param {Object} hostObject
      */
     Backbone.Cycle.SelectableModel.applyTo = function ( hostObject ) {
-        // Apply the Backbone.Picky.Selectable mixin
-        Backbone.Picky.Selectable.applyTo( hostObject );
+        // Apply the Backbone.Select.Me mixin
+        Backbone.Select.Me.applyTo( hostObject );
 
         // Apply the Cycle.SelectableModel mixin
         _.extend( hostObject, new Backbone.Cycle.SelectableModel() );
@@ -133,12 +133,12 @@
     /**
      * Backbone.Cycle.SelectableCollection
      *
-     * A constructor-based mixin. Also includes Backbone.Picky.SingleSelect, no need to apply it separately. For setup,
-     * apply the mixin to a host object with `Backbone.Cycle.SelectableCollection.applyTo( hostObject );`.
+     * A constructor-based mixin. Also includes Backbone.Select.One, no need to apply it separately. For setup, apply
+     * the mixin to a host object with `Backbone.Cycle.SelectableCollection.applyTo( hostObject );`.
      *
      * @class   {Backbone.Cycle.SelectableCollection}
      * @extends {Backbone.Cycle.Collection}
-     * @extends {Backbone.Picky.SingleSelect}
+     * @extends {Backbone.Select.One}
      * @extends {Backbone.Collection}
      */
     Backbone.Cycle.SelectableCollection = function () {};
@@ -230,10 +230,10 @@
     /**
      * Class method setting up a host object with the SelectableCollection mixin.
      *
-     * Backbone.Cycle.SelectableCollection requires Backbone.Picky. Therefore, it extends the host object with
-     * Picky.SingleSelect in the process (no need to apply Picky.SingleSelect separately).
+     * Backbone.Cycle.SelectableCollection requires Backbone.Select. Therefore, it extends the host object with
+     * Backbone.Select.One in the process (no need to apply Select.One separately).
      *
-     * Picky.MultiSelect is not supported yet.
+     * Backbone.Select.Many is not supported yet.
      *
      * @param {Object} hostObject
      * @param {Backbone.Cycle.SelectableModel[]} models    models passed to the collection constructor
@@ -242,7 +242,7 @@
      *                                                     "none"
      * @param {string} [options.selectIfRemoved="none"]    which item to select when the currently selected item is
      *                                                     removed: "prev", "next", "prevNoLoop", "nextNoLoop", "none"
-     * @param {string} [options.enableModelSharing=false]  enables model-sharing mode (see Backbone.Picky)
+     * @param {string} [options.enableModelSharing=false]  enables model-sharing mode (see Backbone.Select)
      */
     Backbone.Cycle.SelectableCollection.applyTo = function ( hostObject, models, options ) {
 
@@ -262,13 +262,8 @@
         enableSelectIfRemoved = hostObject.selectIfRemoved !== "none";
         enableModelSharing = options.enableModelSharing || enableInitialSelection || enableSelectIfRemoved;
 
-        // Apply the Backbone.Picky.Selectable mixin
-        if ( enableModelSharing ) {
-            // model-sharing mode
-            Backbone.Picky.SingleSelect.applyTo( hostObject, models );
-        } else {
-            Backbone.Picky.SingleSelect.applyTo( hostObject );
-        }
+        // Apply the Backbone.Select.One mixin
+        Backbone.Select.One.applyTo( hostObject, models, { enableModelSharing: enableModelSharing } );
 
         // Apply the Cycle.SelectableCollection mixin
         _.extend( hostObject, new Backbone.Cycle.SelectableCollection() );

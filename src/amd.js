@@ -3,13 +3,13 @@
 
         var underscore = require( 'underscore' );
         var backbone = require( 'backbone' );
-        var picky = require( 'backbone.picky' );
+        var select = require( 'backbone.select' );
 
-        module.exports = factory( underscore, backbone, picky );
+        module.exports = factory( underscore, backbone, select );
 
     } else if ( typeof define === 'function' && define.amd ) {
 
-        define( ['underscore', 'backbone', 'backbone.picky'], factory );
+        define( ['underscore', 'backbone', 'backbone.select'], factory );
 
     }
 }( this, function ( _, Backbone ) {

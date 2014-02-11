@@ -27,7 +27,7 @@ module.exports = function(config) {
       // Component dependencies
       'bower_components/underscore/underscore.js',
       'bower_components/backbone/backbone.js',
-      'bower_components/backbone.picky/lib/backbone.picky.js',
+      'bower_components/backbone.select/lib/backbone.select.js',
 
       'lib-other/**/*.js',
 

@@ -6,7 +6,7 @@ requirejs.config( {
         'jquery': '../demo/bower_demo_components/jquery/jquery',
         'underscore': 'underscore/underscore',
         'backbone': 'backbone/backbone',
-        'backbone.picky': 'backbone.picky/lib/amd/backbone.picky',
+        'backbone.select': 'backbone.select/lib/amd/backbone.select',
         'backbone.cycle': '/dist/amd/backbone.cycle'
     },
 
@@ -26,7 +26,7 @@ require( [
     'jquery',
     'underscore',
     'backbone',
-    'backbone.picky',
+    'backbone.select',
     'backbone.cycle'
 
 ], function ( $, _, Backbone ) {

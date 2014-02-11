@@ -4,7 +4,7 @@ Navigating and selecting Backbone Models and Collections.
 
 ## Dependencies and setup
 
-[Backbone][] and [Backbone.Picky][] are the only dependencies. (Backbone.Picky needs to be pulled from [my repo][Backbone.Picky_hashchange] until my PRs are merged in.) Include backbone.cycle.js after [Backbone][] and [Backbone.Picky][] are loaded.
+[Backbone][] and [Backbone.Select][] are the only dependencies. Include backbone.cycle.js after [Backbone][] and [Backbone.Select][] are loaded.
 
 ## Components
 
@@ -16,13 +16,15 @@ Navigating and selecting Backbone Models and Collections.
 
 #### What they do
 
+...
+
 - initialSelection
 - selectIfRemoved
 - enableModelSharing
 
 Important: If `initialSelection` or `selectIfRemoved` is set to anything other than "none", model-sharing mode is enabled automatically. (That is because they all are based on the same event-handling mechanisms.)
 
-#### Restrictions and caveats
+#### Restrictions and caveats when using options
 
 If you make use of any of these options, the following caveats apply:
 
@@ -68,7 +70,7 @@ Confused? Fair enough. Don't use `silent` then ;).
 - Run `npm install`. (Creates the environment.)
 - Run `bower install`. (Fetches the dependencies of the script.)
 
-Your test and build environment is ready now. If you want to test against specific versions of Backbone or Backbone.Picky, edit `bower.json` first.
+Your test and build environment is ready now. If you want to test against specific versions of Backbone or Backbone.Select, edit `bower.json` first.
 
 ### Running tests, creating a new build
 
@@ -100,9 +102,10 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 MIT.
 
-[Backbone.Picky_hashchange] "Backbone.Picky, hashchange"
+Copyright (c) 2014 Michael Heim.
+
 [Backbone]: http://backbonejs.org/ "Backbone.js"
-[Backbone.Picky]: https://github.com/derickbailey/backbone.picky#readme "Backbone.Picky"
+[Backbone.Select]: https://github.com/hashchange/backbone.select#readme "Backbone.Select"
 [Node.js]: http://nodejs.org/ "Node.js"
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"

@@ -117,8 +117,9 @@
                 // A model being selected before it is even part of a collection: that is a scenario which only ought to
                 // happen with model sharing.
 
-                // There are no tests here for adding and resetting with the silent option. As stated in the Picky
-                // documentation, the silent option can't be used for these actions when model sharing is enabled.
+                // There are no tests here for adding and resetting with the silent option. As stated in the
+                // Backbone.Select documentation, the silent option can't be used for these actions when model sharing
+                // is enabled.
 
                 beforeEach( function () {
                     Collection = bindOptions( { initialSelection: "none", enableModelSharing: true } );
@@ -262,8 +263,9 @@
                 // A model being selected before it is even part of a collection: that is a scenario which only ought to
                 // happen with model sharing.
 
-                // There are no tests here for adding and resetting with the silent option. As stated in the Picky
-                // documentation, the silent option can't be used for these actions when model sharing is enabled.
+                // There are no tests here for adding and resetting with the silent option. As stated in the
+                // Backbone.Select documentation, the silent option can't be used for these actions when model sharing
+                // is enabled.
 
                 beforeEach( function () {
                     Collection = bindOptions( { initialSelection: "first", enableModelSharing: true } );

@@ -59,9 +59,9 @@
 
     $testTypes.find( 'input[name="testType"]' ).change( function () {
 
-        var optsPicky = [ 'optModelSharingMode', 'closeCollection' ],
+        var optsSelect = [ 'optModelSharingMode', 'closeCollection' ],
             optsCycleOnly = [ 'optInitialSelection' ],
-            optsAll = optsPicky.concat( optsCycleOnly ),
+            optsAll = optsSelect.concat( optsCycleOnly ),
 
             activate = function ( optionIds, activate ) {
                 if ( _.isUndefined( activate ) ) activate = true;
@@ -83,8 +83,8 @@
             };
 
         switch ( getTestType() ) {
-            case "picky":
-                activate( optsPicky );
+            case "select":
+                activate( optsSelect );
                 activate( optsCycleOnly, false );
                 break;
             case "cycle":
@@ -118,7 +118,6 @@
             models,
             hasClose = false,
             doClose,
-            oldPicky = !Backbone.Picky.Selectable.applyTo,
 
             Logger = function () {
                 this.reset();
@@ -134,18 +133,18 @@
         var logger = new Logger();
 
         switch ( testType ) {
-            case "picky.old":
-                msg( "Testing Backbone.Picky (old version, 0.2.0)" );
+            case "picky":
+                msg( "Testing Backbone.Picky" );
 
                 Model = Backbone.Model.extend( {
                     initialize: function () {
-                        _.extend( this, new Backbone.Old.Picky.Selectable( this ) );
+                        _.extend( this, new Backbone.Picky.Selectable( this ) );
                     }
                 } );
 
                 Collection = Backbone.Collection.extend( {
                     initialize: function () {
-                        _.extend( this, new Backbone.Old.Picky.SingleSelect( this ) );
+                        _.extend( this, new Backbone.Picky.SingleSelect( this ) );
                         this.listenTo( this, "select:one", this.log );
                     },
                     log: function ( model ) {
@@ -155,22 +154,18 @@
 
                 break;
 
-            case "picky":
-                msg( "Testing Backbone.Picky (new version)" );
+            case "select":
+                msg( "Testing Backbone.Select" );
 
                 Model = Backbone.Model.extend( {
                     initialize: function () {
-                        Backbone.Picky.Selectable.applyTo( this );
+                        Backbone.Select.Me.applyTo( this );
                     }
                 } );
 
                 Collection = Backbone.Collection.extend( {
                     initialize: function ( models ) {
-                        if ( options.enableModelSharing ) {
-                            Backbone.Picky.SingleSelect.applyTo( this, models );
-                        } else {
-                            Backbone.Picky.SingleSelect.applyTo( this );
-                        }
+                        Backbone.Select.One.applyTo( this, models, options );
                         this.listenTo( this, "select:one", this.log );
                     },
                     log: function ( model ) {
@@ -185,20 +180,15 @@
             case "cycle":
                 msg( "Testing Backbone.Cycle" );
 
-                if ( oldPicky ) {
-                    msg( "ERR Outdated version of Backbone.Picky (0.2.0) is loaded in index.html! Fix and reload page." );
-                    msg( "ERR Test will continue with plain Backbone." );
-                }
-
                 Model = Backbone.Model.extend( {
                     initialize: function () {
-                        if ( !oldPicky )Backbone.Cycle.SelectableModel.applyTo( this );
+                        Backbone.Cycle.SelectableModel.applyTo( this );
                     }
                 } );
 
                 Collection = Backbone.Collection.extend( {
                     initialize: function ( models, options ) {
-                        if ( !oldPicky ) Backbone.Cycle.SelectableCollection.applyTo( this, models, options );
+                        Backbone.Cycle.SelectableCollection.applyTo( this, models, options );
                         this.listenTo( this, "select:one", this.log );
                     },
                     log: function ( model ) {
