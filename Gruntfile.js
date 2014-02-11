@@ -5,9 +5,9 @@ module.exports = function(grunt) {
       HTTP_PORT = 9400,
       KARMA_PORT = 9877,
       WATCHED_FILES = [
-        'demo/*',
-        'spec/*',
-        'src/*'
+        'demo/**/*',
+        'spec/**/*',
+        'src/**/*'
       ],
       SINON_SOURCE_DIR = 'node_modules/karma-chai-plugins/node_modules/sinon/lib/sinon/';
 
