@@ -10,7 +10,7 @@
         var backbone = require( 'backbone' );
         var picky = require( 'backbone.picky' );
 
-        module.exports = factory( underscore, backbone );
+        module.exports = factory( underscore, backbone, picky );
 
     } else if ( typeof define === 'function' && define.amd ) {
 
