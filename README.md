@@ -198,7 +198,7 @@ You have three options to choose from.
 - `enableModelSharing`: 
   Set it to true if you share models among multiple collections. See the [section on model sharing][Backbone.Select-model-sharing] in the documentation of Backbone.Select. Model sharing is disabled by default.
 
-_Watch out:_ When `initialSelection` or `selectIfRemoved` is set to anything other than "none", model-sharing mode *is enabled automatically*. (That is because all options are based on the same event-handling mechanism.) [See below][options-caveats] for potential pitfalls.
+Watch out: When `initialSelection` or `selectIfRemoved` is set to anything other than "none", model-sharing mode *is enabled automatically*. (That is because all options are based on the same event-handling mechanism.) [See below][options-caveats] for potential pitfalls.
 
 The use of options is demonstrated in the [introductory example][intro-example].
 
@@ -246,7 +246,7 @@ If you are not actually sharing models among collections, you can get away with 
 
 Confused? Fair enough. Don't use `silent` then ;).
 
-#### Usage examples for Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection
+#### Usage examples for Backbone.Cycle.SelectableCollection
 
 Check out the [introductory example][intro-example].
 
@@ -310,6 +310,6 @@ Copyright (c) 2014 Michael Heim.
 [backbone-model-initialize]: http://backbonejs.org/#Model-constructor "Backbone Documentation: Model constructor/initialize"
 [Backbone.Select-model-sharing]: https://github.com/hashchange/backbone.select#sharing-models-among-collections "Backbone.Select: Sharing models among collections"
 
-[Cycle.Model-methods]: #methods-of-backbonecyclecmodel
+[Cycle.Model-methods]: #methods-of-backbonecyclemodel
 [options-caveats]: #restrictions-and-caveats-when-using-options
 [intro-example]: #the-gist-of-it
