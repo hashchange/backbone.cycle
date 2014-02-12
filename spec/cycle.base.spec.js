@@ -2,18 +2,17 @@
 (function () {
     "use strict";
 
-    describe( 'Base mixins: Backbone.Cycle.Model, Backbone.Cycle.Collection', function () {
+    describe( 'Base mixin: Backbone.Cycle.Model', function () {
 
-        var Model, Collection, m1, m2, m3, collection;
+        var Model, m1, m2, m3, collection;
 
         beforeEach( function () {
             Model = Backbone.Model.extend( Backbone.Cycle.Model );
-            Collection = Backbone.Collection.extend( Backbone.Cycle.Collection );
 
             m1 = new Model();
             m2 = new Model();
             m3 = new Model();
-            collection = new Collection( [m1, m2, m3] );
+            collection = new Backbone.Collection( [m1, m2, m3] );
         } );
 
         describe( 'Calling next() on a model', function () {

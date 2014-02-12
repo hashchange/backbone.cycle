@@ -2,13 +2,12 @@
 (function () {
     "use strict";
 
-    describe( 'Base mixins with model sharing: Backbone.Cycle.Model, Backbone.Cycle.Collection', function () {
+    describe( 'Base mixin with model sharing: Backbone.Cycle.Model', function () {
 
-        var Model, Collection, m1, m2, m3, mA, mB, mC, c1, c2, cA;
+        var Model, m1, m2, m3, mA, mB, mC, c1, c2, cA;
 
         beforeEach( function () {
             Model = Backbone.Model.extend( Backbone.Cycle.Model );
-            Collection = Backbone.Collection.extend( Backbone.Cycle.Collection );
 
             m1 = new Model();
             m2 = new Model();
@@ -17,9 +16,9 @@
             mB = new Model();
             mC = new Model();
 
-            c1 = new Collection( [m1, m2, m3] );
-            cA = new Collection( [mA, mB, mC] );
-            c2 = new Collection( [mA, m1, mB, m2, mC, m3] );
+            c1 = new Backbone.Collection( [m1, m2, m3] );
+            cA = new Backbone.Collection( [mA, mB, mC] );
+            c2 = new Backbone.Collection( [mA, m1, mB, m2, mC, m3] );
         } );
 
         describe( 'Calling next() on a model without a collection context', function () {

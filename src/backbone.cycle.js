@@ -2,56 +2,11 @@
     "use strict";
 
     /**
-     * Backbone.Cycle:
+     * Base component: Backbone.Cycle.Model
      *
-     * Backbone.Cycle.Collection                 (plain object)
-     * Backbone.Cycle.Model                      (plain object)
-     *
-     * Backbone.Cycle.SelectableCollection       (constructor)
-     * Backbone.Cycle.SelectableModel            (constructor)
-     *
-     * Plain object mixins
-     * -------------------
-     *
-     * The base mixins, which don't have the ability to select items, are plain objects. A target object can be
-     * augmented simply by calling `extend`, e.g.
-     *
-     *     MyModelType = Backbone.Model.extend( Backbone.Cycle.Model ).extend( ... );
-     *
-     * Constructor-based mixins
-     * ------------------------
-     *
-     * The "selectable" mixins, however, are constructors functions. To augment an object with Cycle.SelectableCollection,
-     * call `Cycle.SelectableCollection.applyTo` - a class method, not an instance method. The same procedure applies to
-     * Cycle.SelectableModel. Example:
-     *
-     *     var MyCollection = Backbone.Collection.extend( {
-     *
-     *         initialize: function () {
-     *             Backbone.Cycle.SelectableCollection.applyTo( this, { ... options here } );
-     *         }
-     *
-     *     } );
-     *
-     * NB See Cycle.SelectableCollection.applyTo for the available options.
-     */
-
-    /**
-     * Base mixins: Backbone.Cycle.Model, Backbone.Cycle.Collection
-     *
-     * These are plain objects. Apply them to the host object with `extend`.
+     * The component is a plain object. Apply it to the host object with `extend`.
      */
     Backbone.Cycle = {
-
-        Collection: {
-
-            _at_looped: function ( index ) {
-                var inRange = index % this.length;
-                if ( inRange < 0 ) inRange = this.length + inRange;  // in fact subtracting from length because inRange < 0
-                return this.at( inRange );
-            }
-
-        },
 
         Model: {
 
@@ -60,7 +15,7 @@
                     index = collection.indexOf( this );
 
                 if ( index === -1 ) throw new Error( "Model " + this.cid + "doesn't exist in the collection." );
-                return collection._at_looped( index + n );
+                return at_looped( index + n, collection );
             },
             behind: function ( n, collectionContext ) {
                 return this.ahead( -n, collectionContext );
@@ -170,7 +125,7 @@
         },
         ahead: function ( n ) {
             if ( !this.selected ) throw new Error( "Illegal call of SelectableCollection navigation method. No model had been selected to begin with." );
-            return this._at_looped( this.indexOf( this.selected ) + n );
+            return at_looped( this.indexOf( this.selected ) + n, this );
         },
         behind: function ( n ) {
             return this.ahead( -n );
@@ -217,7 +172,7 @@
                 selectIndex = Math.max( Math.min( selectIndex, this.length - 1 ), 0 );
             }
 
-            this._at_looped( selectIndex ).select();
+            at_looped( selectIndex, this ).select();
         }
 
     } );
@@ -278,5 +233,13 @@
         }
 
     };
+
+
+    // Helper function
+    function at_looped ( index, collection ) {
+        var inRange = index % collection.length;
+        if ( inRange < 0 ) inRange = collection.length + inRange;  // in fact subtracting from length because inRange < 0
+        return collection.at( inRange );
+    }
 
 }( Backbone, _ ));
