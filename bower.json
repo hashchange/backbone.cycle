@@ -36,6 +36,6 @@
   "dependencies": {
     "underscore": "~1.5.2",
     "backbone": "~1.1.0",
-    "backbone.select": "~1.0.0"
+    "backbone.select": "~1.1.0"
   }
 }

@@ -6,7 +6,7 @@ requirejs.config( {
         'jquery': '../demo/bower_demo_components/jquery/jquery',
         'underscore': 'underscore/underscore',
         'backbone': 'backbone/backbone',
-        'backbone.select': 'backbone.select/lib/amd/backbone.select',
+        'backbone.select': 'backbone.select/dist/amd/backbone.select',
         'backbone.cycle': '/dist/amd/backbone.cycle'
     },
 
