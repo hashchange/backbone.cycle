@@ -53,8 +53,8 @@ require( [
             initialize: function ( options ) {
                 _.bindAll( this, "selectNext", "selectPrev", "onSelect", "render" );
                 this.collection = options.collection;
-                this.listenTo( collection, "select:one", this.onSelect );
-                this.listenTo( collection, "remove", this.render );
+                this.listenTo( this.collection, "select:one", this.onSelect );
+                this.listenTo( this.collection, "remove", this.render );
                 this.render();
             },
             selectNext: function ( event ) {

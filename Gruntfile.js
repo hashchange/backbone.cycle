@@ -54,7 +54,11 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: "<%= meta.banner %>"
+        banner: "<%= meta.banner %>",
+        mangle: {
+          except: ['jQuery', 'Backbone', '_']
+        },
+        sourceMap: true
       },
       amd: {
         src : 'dist/amd/backbone.cycle.js',
@@ -62,12 +66,7 @@ module.exports = function(grunt) {
       },
       core: {
         src: 'dist/backbone.cycle.js',
-        dest: 'dist/backbone.cycle.min.js',
-        options: {
-          sourceMap: 'dist/backbone.cycle.map',
-          sourceMappingURL: 'backbone.cycle.map',
-          sourceMapPrefix: 1
-        }
+        dest: 'dist/backbone.cycle.min.js'
       }
     },
 
