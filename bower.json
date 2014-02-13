@@ -27,7 +27,10 @@
     "lib-other",
     "web-mocha",
     "spec",
-    "src"
+    "src",
+    "Gruntfile.js",
+    "karma.conf.js",
+    "package.json"
   ],
   "devDependencies": {},
   "dependencies": {
