@@ -25,6 +25,30 @@
             collection = new Collection( [m1, m2, m3] );
         } );
 
+        describe( 'A model instance should identify itself', function () {
+
+            it( "as an instance of Backbone.Model", function () {
+                expect( m1 ).to.be.instanceOf( Backbone.Model );
+            } );
+
+            it( "as 'Backbone.Cycle.SelectableModel' with the _cycleType property", function () {
+                expect( m1._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+            } );
+
+        } );
+
+        describe( 'A collection instance should identify itself', function () {
+
+            it( "as an instance of Backbone.Collection", function () {
+                expect( collection ).to.be.instanceOf( Backbone.Collection );
+            } );
+
+            it( "as 'Backbone.Cycle.SelectableCollection' with the _cycleType property", function () {
+                expect( collection._cycleType ).to.equal( "Backbone.Cycle.SelectableCollection" );
+            } );
+
+        } );
+
         describe( 'Calling next() on a collection', function () {
 
             it( 'returns the next model in the collection, based on the selected model, if that next model exists', function () {

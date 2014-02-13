@@ -41,7 +41,9 @@
             },
             prevNoLoop: function ( collectionContext ) {
                 return this.behindNoLoop( 1, collectionContext );
-            }
+            },
+
+            _cycleType: "Backbone.Cycle.Model"
 
         }
 
@@ -61,7 +63,7 @@
      */
     Backbone.Cycle.SelectableModel = function () {};
 
-    _.extend( Backbone.Cycle.SelectableModel.prototype, Backbone.Cycle.Model );
+    _.extend( Backbone.Cycle.SelectableModel.prototype, Backbone.Cycle.Model, { _cycleType: "Backbone.Cycle.SelectableModel" } );
 
     /**
      * Class method setting up a host object with the SelectableModel mixin.
@@ -173,7 +175,9 @@
             }
 
             at_looped( selectIndex, this ).select();
-        }
+        },
+
+        _cycleType: "Backbone.Cycle.SelectableCollection"
 
     } );
 

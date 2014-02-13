@@ -15,6 +15,18 @@
             collection = new Backbone.Collection( [m1, m2, m3] );
         } );
 
+        describe( 'A model instance should identify itself', function () {
+
+            it( "as an instance of Backbone.Model", function () {
+                expect( m1 ).to.be.instanceOf( Backbone.Model );
+            } );
+
+            it( "as 'Backbone.Cycle.Model' with the _cycleType property", function () {
+                expect( m1._cycleType ).to.equal( "Backbone.Cycle.Model" );
+            } );
+
+        } );
+
         describe( 'Calling next() on a model', function () {
 
             it( 'returns the next model in the collection if there is one', function () {
