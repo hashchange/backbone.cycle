@@ -1,4 +1,4 @@
-// Backbone.Cycle, v1.0.5
+// Backbone.Cycle, v1.0.6
 // Copyright (c)2014 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle
@@ -206,6 +206,10 @@
     Backbone.Cycle.SelectableCollection.applyTo = function ( hostObject, models, options ) {
 
         var enableInitialSelection, enableSelectIfRemoved, enableModelSharing;
+
+        // Enforcing the presence of the models argument. (The rest of the arg validation is handled by
+        // Backbone.Select.One.)
+        if ( arguments.length < 2 ) throw new Error( "The `models` parameter has not been passed to Backbone.Cycle.SelectableCollection.applyTo. Its value can be undefined if no models are passed in during instantiation, but even so, it must be provided." );
 
         options || ( options = {} );
 

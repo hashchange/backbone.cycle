@@ -202,6 +202,10 @@
 
         var enableInitialSelection, enableSelectIfRemoved, enableModelSharing;
 
+        // Enforcing the presence of the models argument. (The rest of the arg validation is handled by
+        // Backbone.Select.One.)
+        if ( arguments.length < 2 ) throw new Error( "The `models` parameter has not been passed to Backbone.Cycle.SelectableCollection.applyTo. Its value can be undefined if no models are passed in during instantiation, but even so, it must be provided." );
+
         options || ( options = {} );
 
         // Transfer the options to the host object
