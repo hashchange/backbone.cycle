@@ -4,7 +4,12 @@ Backbone.Cycle is a set of mixins for [Backbone][] models and collections. Model
 
 With Backbone.Cycle options, you enable predefined, common behaviours, like always selecting the first item in a new collection, or selecting the previous model when a selected model is removed. Models can be shared across multiple collections, and selections are synced among them.
 
+##### Backbone.Cycle vs Backbone.Select
+
 Backbone.Cycle is built on top of [Backbone.Select][]. The selection features are identical. Backbone.Cycle adds navigation methods and options.
+
+- Backbone.Select is designed with a minimal surface area. As few methods as possible are added to your objects. Basically, all you can do is `select` and `deselect`. The idea is that you should be able to use Backbone.Select mixins pretty much everywhere, with a near-zero risk of conflicts.
+- With Backbone.Cycle, you get a little more in terms of methods and behaviour. It may often be more convenient to use and probably is the better choice for a greenfield project.
 
 ## The gist of it
 
@@ -34,15 +39,17 @@ var collection = new Collection(
     { initialSelection: "first", selectIfRemoved: "next" }
 );
 
-console.log( collection.selected.id ); // prints "m1"
+console.log( collection.selected.id ); // prints "m1" because of initialSelection: "first"
 console.log( m2.next().id );           // prints "m3"
 console.log( m1.ahead( 2 ).id );       // prints "m3"
 
 collection.selectNext();               // selects m2
 
 collection.remove( m2 );
-console.log( collection.selected.id ); // prints "m3"
+console.log( collection.selected.id ); // prints "m3" because of selectIfRemoved: "next"
 ```
+
+If you are not familiar with [Backbone.Select][], you should [have a look there][Backbone.Select-intro-example], too.
 
 ## Dependencies and setup
 
@@ -312,6 +319,7 @@ Copyright (c) 2014 Michael Heim.
 
 [backbone-model-initialize]: http://backbonejs.org/#Model-constructor "Backbone Documentation: Model constructor/initialize"
 [Backbone.Select-model-sharing]: https://github.com/hashchange/backbone.select#sharing-models-among-collections "Backbone.Select: Sharing models among collections"
+[Backbone.Select-intro-example]: https://github.com/hashchange/backbone.select#an-introductory-example "Backbone.Select: An introductory example"
 
 [Cycle.Model-methods]: #methods-of-backbonecyclemodel
 [options-caveats]: #restrictions-and-caveats-when-using-options
