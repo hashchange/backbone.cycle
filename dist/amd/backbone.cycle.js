@@ -1,9 +1,9 @@
-// Backbone.Cycle, v1.0.6
+// Backbone.Cycle, v1.0.7
 // Copyright (c)2014 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle
 
-(function ( root, factory ) {
+;( function ( root, factory ) {
     if ( typeof exports === 'object' ) {
 
         var underscore = require( 'underscore' );
@@ -20,7 +20,7 @@
 }( this, function ( _, Backbone ) {
     "option strict";
 
-    ( function( Backbone, _ ) {
+    ;( function( Backbone, _ ) {
         "use strict";
     
         /**
