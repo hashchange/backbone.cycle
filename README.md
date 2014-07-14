@@ -55,7 +55,7 @@ If you are not familiar with [Backbone.Select][], you should [have a look there]
 
 [Backbone][] and [Backbone.Select][] are the only dependencies. Include backbone.cycle.js after [Backbone][] and [Backbone.Select][].
 
-The stable version of Backbone.Cycle is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.cycle`.
+The stable version of Backbone.Cycle is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.cycle`. With npm, it is `npm install backbone.cycle`.
 
 ## Components
 
