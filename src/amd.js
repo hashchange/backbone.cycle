@@ -1,19 +1,25 @@
 ;( function ( root, factory ) {
+    "use strict";
+
     if ( typeof exports === 'object' ) {
 
-        var underscore = require( 'underscore' );
-        var backbone = require( 'backbone' );
-        var select = require( 'backbone.select' );
-
-        module.exports = factory( underscore, backbone, select );
+        module.exports = factory(
+            require( 'underscore' ),
+            require( 'backbone' ),
+            require( 'backbone.select' )
+        );
 
     } else if ( typeof define === 'function' && define.amd ) {
 
-        define( ['underscore', 'backbone', 'backbone.select'], factory );
+        define( [
+            'underscore',
+            'backbone',
+            'backbone.select'
+        ], factory );
 
     }
 }( this, function ( _, Backbone ) {
-    "option strict";
+    "use strict";
 
     // @include backbone.cycle.js
     return Backbone.Cycle;
