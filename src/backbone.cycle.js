@@ -189,14 +189,14 @@
      *
      * Backbone.Select.Many is not supported yet.
      *
-     * @param {Object} hostObject
-     * @param {Backbone.Cycle.SelectableModel[]} models    models passed to the collection constructor
-     * @param {Object} [options]
-     * @param {string} [options.initialSelection="none"]   which item to select when the collection is reset: "first",
-     *                                                     "none"
-     * @param {string} [options.selectIfRemoved="none"]    which item to select when the currently selected item is
-     *                                                     removed: "prev", "next", "prevNoLoop", "nextNoLoop", "none"
-     * @param {string} [options.enableModelSharing=false]  enables model-sharing mode (see Backbone.Select)
+     * @param {Object}  hostObject
+     * @param {Backbone.Cycle.SelectableModel[]} models     models passed to the collection constructor
+     * @param {Object}  [options]
+     * @param {string}  [options.initialSelection="none"]   which item to select when the collection is reset: "first",
+     *                                                      "none"
+     * @param {string}  [options.selectIfRemoved="none"]    which item to select when the currently selected item is
+     *                                                      removed: "prev", "next", "prevNoLoop", "nextNoLoop", "none"
+     * @param {boolean} [options.enableModelSharing=false]  enables model-sharing mode (see Backbone.Select)
      */
     Backbone.Cycle.SelectableCollection.applyTo = function ( hostObject, models, options ) {
 
