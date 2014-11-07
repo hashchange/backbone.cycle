@@ -139,7 +139,7 @@ require( [
         models.push( new Model( { id: i + 1 } ) );
     }
 
-    collection = new Collection( models, { initialSelection: "first", selectIfRemoved: "prevNoLoop" } );
+    collection = new Collection( models, { autoSelect: "first", selectIfRemoved: "prevNoLoop" } );
 
     new StageView( { collection: collection } );
     new PaginationView( { collection: collection } );

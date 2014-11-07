@@ -101,7 +101,7 @@
             modelLoop = Number( $modelLoop.val() ),
             collectionLoop = Number( $collectionLoop.val() ),
             options = {
-                initialSelection: $optInitialSelection.val(),
+                autoSelect: $optInitialSelection.val(),
                 enableModelSharing: $optModelSharing.is( ':checked' ),
                 closeCollection: $closeCollection.is( ':checked' )
             };

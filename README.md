@@ -36,10 +36,10 @@ var m1 = new Model( {id: "m1"} ),
 
 var collection = new Collection(
     [m1, m2, m3],
-    { initialSelection: "first", selectIfRemoved: "next" }
+    { autoSelect: "first", selectIfRemoved: "next" }
 );
 
-console.log( collection.selected.id ); // prints "m1" because of initialSelection: "first"
+console.log( collection.selected.id ); // prints "m1" because of autoSelect: "first"
 console.log( m2.next().id );           // prints "m3"
 console.log( m1.ahead( 2 ).id );       // prints "m3"
 
@@ -192,20 +192,29 @@ When a SelectableCollection mixin is created with `applyTo`, you can pass an opt
 
 You have three options to choose from.
 
-- `initialSelection`: 
-  Set it to `"first"` if you want the first model in a collection to be selected automatically. The setting kicks in when the initial set of models is passed to a collection - be it to the constructor, with `add`, or with `reset`. The setting also applies when `reset` is called again later on.
+- `autoSelect`:
 
-  The option is off by default, with value `initialSelection: "none"`.
+  Set it to `"first"` if you want the first model in a collection to be selected automatically. You can also set the option to `"last"`, or provide the index of the model you'd like to see auto-selected. If the index does not exist at the time, that's fine - `autoSelect` just won't select anything then.
+  
+  The `autoSelect` setting kicks in when the initial set of models is passed to a collection - be it to the constructor, with `add`, or with `reset`. Auto select can also be triggered later on in the lifecycle of a collection: when you do an `add` or `reset` while there is no selection in the collection.
+  
+  It's important to note that `autoSelect` will _only_ spring into action during instantiation, with an `add`, or with a `reset`. It won't guarantee that there is a selected item all the time. If you deselect manually, nothing will happen unless you `add` or `reset` later on.
+   
+  `autoSelect` may have a performance impact when adding items to really large collections. Those are better handled without `autoSelect` magic, at least if you add items frequently. The negative effect is limited to actual `add` calls, though - resets are not affected.
+  
+  The `autoSelect` option is off by default, with value `autoSelect: "none"`.
 
 - `selectIfRemoved`:
+
   Use it if you want to select another model when the selected model is removed from the collection. The option value determines which model gets selected: `"prev"`, `"next"`, `"prevNoLoop"`, `"nextNoLoop"`. 
 
   The option is off by default, with value `selectIfRemoved: "none"`.
 
-- `enableModelSharing`: 
+- `enableModelSharing`:
+
   Set it to true if you share models among multiple collections. See the [section on model sharing][Backbone.Select-model-sharing] in the documentation of Backbone.Select. Model sharing is disabled by default.
 
-Watch out: When `initialSelection` or `selectIfRemoved` is set to anything other than "none", model-sharing mode *is enabled automatically*. (That is because all options are based on the same event-handling mechanism.) [See below][options-caveats] for potential pitfalls.
+Watch out: When `autoSelect` or `selectIfRemoved` is set to anything other than "none", model-sharing mode *is enabled automatically*. (That is because all options are based on the same event-handling mechanism.) [See below][options-caveats] for potential pitfalls.
 
 The use of options is demonstrated in the [introductory example][intro-example].
 
@@ -246,10 +255,10 @@ If you are not actually sharing models among collections, you can get away with 
 - `reset`:
   Likewise, don't reset the collection silently if a model is selected. You'd end up with the exact same mess: a reference to a selected model which has been removed from the collection. 
 
-  Make sure all models are deselected before silently resetting the collection. If you pass in new models with the silent reset, you suppress the initial selection.
+  Make sure all models are deselected before silently resetting the collection. If you pass in new models with the silent reset, `autoSelect` is bypassed, so automatic selection doesn't happen.
 
 - `add`:
-  Silencing `add` is safe. If you are using `add` to pass the initial set of models to the collection, the `silent` option suppresses the initial selection.
+  Silencing `add` is safe. If you are using `add` to pass the initial set of models to the collection, the `silent` option suppresses the automatic selection (ie, no `autoSelect`).
 
 Confused? Fair enough. Don't use `silent` then ;).
 
@@ -300,6 +309,12 @@ In case anything about the test and build process needs to be changed, have a lo
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
 ## Release notes
+
+### v1.1.0
+
+* Renamed `initialSelection` to `autoSelect`; `initialSelection` is deprecated but kept around as an alias in 1.x
+* `autoSelect` no longer triggers a deselection event under any circumstances
+* `autoSelect` now accepts values "last" or an item index
 
 ### v1.0.9, 1.0.10
 
