@@ -2,7 +2,7 @@
 (function () {
     "use strict";
 
-    describe( 'Options for SelectableCollection: initialSelection', function () {
+    describe( 'Options for SelectableCollection: autoSelect', function () {
 
         var Model, m1, m2, m3, models, Collection, collection;
 
@@ -40,9 +40,9 @@
 
         describe( 'By default, when creating a collection', function () {
 
-            it( 'has its initialSelection property set to "none"', function () {
+            it( 'has its autoSelect property set to "none"', function () {
                 collection = new Collection( models );
-                expect( collection.initialSelection ).to.equal( "none" );
+                expect( collection.autoSelect ).to.equal( "none" );
             } );
 
         } );
@@ -50,56 +50,56 @@
         describe( 'Invalid option values', function () {
 
             it( 'the collection throws an error when an invalid option value is passed', function () {
-                expect( function () { new Collection( models, { initialSelection: "foo" } ); } ).to.throw( Error );
+                expect( function () { new Collection( models, { autoSelect: "foo" } ); } ).to.throw( Error );
             } );
 
             it( 'the collection ignores the option when explicitly set to undefined, and uses the default value "none"', function () {
-                collection = new Collection( models, { initialSelection: undefined } );
-                expect( collection.initialSelection ).to.equal( "none" );
+                collection = new Collection( models, { autoSelect: undefined } );
+                expect( collection.autoSelect ).to.equal( "none" );
             } );
 
         } );
 
         describe( 'Implicit switch to model-sharing mode', function () {
 
-            it( 'the collection stays in standard mode when the initialSelection option is not passed in', function () {
+            it( 'the collection stays in standard mode when the autoSelect option is not passed in', function () {
                 collection = new Collection( models );
                 expect( collection._modelSharingEnabled ).not.to.be.true;
             } );
 
-            it( 'the collection stays in standard mode when the initialSelection option set to "none"', function () {
-                collection = new Collection( models, { initialSelection: "none" } );
+            it( 'the collection stays in standard mode when the autoSelect option set to "none"', function () {
+                collection = new Collection( models, { autoSelect: "none" } );
                 expect( collection._modelSharingEnabled ).not.to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the initialSelection option set to "first"', function () {
-                collection = new Collection( models, { initialSelection: "first" } );
+            it( 'the collection is switched over to model-sharing mode when the autoSelect option set to "first"', function () {
+                collection = new Collection( models, { autoSelect: "first" } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the initialSelection option set to "last"', function () {
-                collection = new Collection( models, { initialSelection: "last" } );
+            it( 'the collection is switched over to model-sharing mode when the autoSelect option set to "last"', function () {
+                collection = new Collection( models, { autoSelect: "last" } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the initialSelection option set to a number', function () {
-                collection = new Collection( models, { initialSelection: 100 } );
+            it( 'the collection is switched over to model-sharing mode when the autoSelect option set to a number', function () {
+                collection = new Collection( models, { autoSelect: 100 } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the initialSelection option set to a number, passed in as a string', function () {
-                collection = new Collection( models, { initialSelection: "100" } );
+            it( 'the collection is switched over to model-sharing mode when the autoSelect option set to a number, passed in as a string', function () {
+                collection = new Collection( models, { autoSelect: "100" } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
         } );
 
-        describe( 'initialSelection is set to "none"', function () {
+        describe( 'autoSelect is set to "none"', function () {
 
             describe( 'all models are deselected initially', function () {
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "none" } );
+                    Collection = bindOptions( { autoSelect: "none" } );
                 } );
 
                 it( 'when they are passed to the constructor, they remain unselected', function () {
@@ -137,7 +137,7 @@
                 // is enabled.
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "none", enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: "none", enableModelSharing: true } );
                     m2.select();
                 } );
 
@@ -168,12 +168,12 @@
 
         } );
 
-        describe( 'initialSelection is set to "first"', function () {
+        describe( 'autoSelect is set to "first"', function () {
 
             describe( 'all models are deselected initially', function () {
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "first", enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: "first", enableModelSharing: true } );
                 } );
 
                 describe( 'when they are passed to the constructor', function () {
@@ -267,7 +267,7 @@
                 } );
 
                 it( 'when they are batch-added as the initial models, with the silent option, no selection is made', function () {
-                    // The initial selection can't be triggered when adding models silently.
+                    // The automatic selection can't be triggered when adding models silently.
 
                     collection = new Collection();
                     collection.add( models, { silent: true } );
@@ -298,7 +298,7 @@
                 // is enabled.
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "first", enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: "first", enableModelSharing: true } );
                     m2.select();
                 } );
 
@@ -389,7 +389,7 @@
                 var newModels, allModels, mA, mB;
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "first", enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: "first", enableModelSharing: true } );
 
                     mA = new Model();
                     mB = new Model();
@@ -566,12 +566,12 @@
 
         } );
 
-        describe( 'initialSelection is set to "last"', function () {
+        describe( 'autoSelect is set to "last"', function () {
 
             describe( 'all models are deselected initially', function () {
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "last", enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: "last", enableModelSharing: true } );
                 } );
 
                 describe( 'when they are passed to the constructor', function () {
@@ -665,7 +665,7 @@
                 } );
 
                 it( 'when they are batch-added as the initial models, with the silent option, no selection is made', function () {
-                    // The initial selection can't be triggered when adding models silently.
+                    // The automatic selection can't be triggered when adding models silently.
 
                     collection = new Collection();
                     collection.add( models, { silent: true } );
@@ -696,7 +696,7 @@
                 // is enabled.
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "last", enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: "last", enableModelSharing: true } );
                     m2.select();
                 } );
 
@@ -787,7 +787,7 @@
                 var newModels, allModels, mA, mB;
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "last", enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: "last", enableModelSharing: true } );
 
                     mA = new Model();
                     mB = new Model();
@@ -969,14 +969,14 @@
 
         } );
 
-        describe( 'initialSelection is set to an index number', function () {
+        describe( 'autoSelect is set to an index number', function () {
 
             describe( 'all models are deselected initially', function () {
 
-                describe( 'the initialSelection index matches a model', function () {
+                describe( 'the autoSelect index matches a model', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { initialSelection: 1, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 1, enableModelSharing: true } );
                     } );
 
                     describe( 'when models are passed to the constructor', function () {
@@ -1074,7 +1074,7 @@
                 describe( 'the index number does not match a model', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { initialSelection: 100, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 100, enableModelSharing: true } );
                     } );
 
                     it( 'when the models are passed to the constructor, no selection is made', function () {
@@ -1103,7 +1103,7 @@
                 } );
 
                 it( 'when they are batch-added as the initial models, with the silent option, no selection is made', function () {
-                    // The initial selection can't be triggered when adding models silently.
+                    // The automatic selection can't be triggered when adding models silently.
 
                     collection = new Collection();
                     collection.add( models, { silent: true } );
@@ -1135,7 +1135,7 @@
                 // is enabled.
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: 1, enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: 1, enableModelSharing: true } );
                     m3.select();
                 } );
 
@@ -1233,10 +1233,10 @@
                     allModels = models.concat( newModels );
                 } );
 
-                describe( 'the initialSelection index is within the original collection range', function () {
+                describe( 'the autoSelect index is within the original collection range', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { initialSelection: 1, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 1, enableModelSharing: true } );
                     } );
 
                     describe( 'when new models are batch-added to the end, and none of them is selected', function () {
@@ -1411,10 +1411,10 @@
 
                 } );
 
-                describe( 'the initialSelection index is outside of the original collection range, but within the range after adding more models', function () {
+                describe( 'the autoSelect index is outside of the original collection range, but within the range after adding more models', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { initialSelection: 3, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 3, enableModelSharing: true } );
                     } );
 
                     describe( 'when new models are batch-added to the end, and none of them is selected', function () {
@@ -1581,12 +1581,12 @@
 
             } );
 
-            describe( 'the initialSelection index is a number passed in as a string', function () {
+            describe( 'the autoSelect index is a number passed in as a string', function () {
 
                 describe( 'the index matches a model', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { initialSelection: "1", enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: "1", enableModelSharing: true } );
                     } );
 
                     it( 'the model matching the index is selected when models are passed to the constructor', function () {
@@ -1618,6 +1618,41 @@
 
         } );
 
+        describe( 'initialSelection is used instead of autoSelect', function () {
+
+            // initialSelection is deprecated, but still supposed to work as an alias of autoSelect
+
+            describe( 'initialSelection is set to "first"', function () {
+
+                beforeEach( function () {
+                    Collection = bindOptions( { initialSelection: "first", enableModelSharing: true } );
+                } );
+
+                it( 'the first model is selected when models are passed to the constructor', function () {
+                    collection = new Collection( models );
+
+                    expect( collection.selected ).to.deep.equal( m1 );
+                    expect( getSelected( models ) ).to.deep.equal( [m1] );
+                } );
+
+                it( 'the first model is selected when models are batch-added as the initial models', function () {
+                    collection = new Collection();
+                    collection.add( models );
+
+                    expect( collection.selected ).to.deep.equal( m1 );
+                    expect( getSelected( models ) ).to.deep.equal( [m1] );
+                } );
+
+                it( 'the first model is selected when models are passed in on reset', function () {
+                    collection = new Collection();
+                    collection.reset( models );
+
+                    expect( collection.selected ).to.deep.equal( m1 );
+                    expect( getSelected( models ) ).to.deep.equal( [m1] );
+                } );
+
+            } );
+        } );
     } );
 
 })();

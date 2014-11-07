@@ -158,8 +158,8 @@
             var isReset = arguments.length && !( arguments[0] instanceof Backbone.Model ),
                 autoSelectAt;
 
-            if ( this.length && ! this.selected && ! this._cycle_skipSelectInitial && this.initialSelection !== "none" ) {
-                autoSelectAt = getAutoSelectIndex( this.initialSelection, this.models );
+            if ( this.length && ! this.selected && ! this._cycle_skipSelectInitial && this.autoSelect !== "none" ) {
+                autoSelectAt = getAutoSelectIndex( this.autoSelect, this.models );
 
                 if ( !isReset ) {
 
@@ -213,7 +213,7 @@
      * @param {Object}        hostObject
      * @param {Backbone.Cycle.SelectableModel[]} models           models passed to the collection constructor
      * @param {Object}        [options]
-     * @param {string|number} [options.initialSelection="none"]   which item to select when the collection is reset:
+     * @param {string|number} [options.autoSelect="none"]         which item to select when the collection is reset:
      *                                                            "first", "last", "none", item index
      * @param {string}        [options.selectIfRemoved="none"]    which item to select when the currently selected item
      *                                                            is removed: "prev", "next", "prevNoLoop", "nextNoLoop",
@@ -231,14 +231,15 @@
         options || ( options = {} );
 
         // Transfer the options to the host object
-        hostObject.initialSelection = options.initialSelection || "none";
+        // (NB initialSelection is an alias of autoSelect, but deprecated.)
+        hostObject.autoSelect = options.autoSelect || options.initialSelection || "none";
         hostObject.selectIfRemoved  = options.selectIfRemoved || "none";
 
         // Validate the option values
-        if ( ! _.contains( [ "first", "last", "none" ], hostObject.initialSelection ) && ! is_integer( hostObject.initialSelection ) ) throw new Error( 'Invalid initialSelection value "' + hostObject.initialSelection + '"' );
+        if ( ! _.contains( [ "first", "last", "none" ], hostObject.autoSelect ) && ! is_integer( hostObject.autoSelect ) ) throw new Error( 'Invalid autoSelect value "' + hostObject.autoSelect + '"' );
         if ( ! _.contains( [ "prev", "next", "prevNoLoop", "nextNoLoop", "none" ], hostObject.selectIfRemoved ) ) throw new Error( 'Invalid selectIfRemoved value "' + hostObject.selectIfRemoved + '"' );
 
-        enableInitialSelection = hostObject.initialSelection !== "none";
+        enableInitialSelection = hostObject.autoSelect !== "none";
         enableSelectIfRemoved = hostObject.selectIfRemoved !== "none";
         enableModelSharing = options.enableModelSharing || enableInitialSelection || enableSelectIfRemoved;
 
@@ -255,7 +256,7 @@
 
             if ( !hostObject.selected && models && models.length ) {
 
-                autoSelectIndex = getAutoSelectIndex( hostObject.initialSelection, models );
+                autoSelectIndex = getAutoSelectIndex( hostObject.autoSelect, models );
                 if ( models[autoSelectIndex] ) {
                     hostObject.selected = models[autoSelectIndex];
                     models[autoSelectIndex].select();
