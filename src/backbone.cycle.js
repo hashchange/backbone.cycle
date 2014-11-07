@@ -153,9 +153,30 @@
         },
 
         selectInitial: function () {
-            if ( this.length && ! this.selected ) {
-                if ( this.initialSelection === "first" ) this.first().select();
+            // A model gets passed in as first argument during an add event, but not during a reset, thus distinguishing
+            // the two.
+            var isReset = arguments.length && !( arguments[0] instanceof Backbone.Model ),
+                autoSelectAt;
+
+            if ( this.length && ! this.selected && ! this._cycle_skipSelectInitial && this.initialSelection !== "none" ) {
+                autoSelectAt = getAutoSelectIndex( this.initialSelection, this.models );
+
+                if ( !isReset ) {
+
+                    // Check if there is a selected model elsewhere in the collection - meaning that a batch of models
+                    // has been added and one of them had already been selected beforehand. The add events are now fired
+                    // one by one, and Backbone.Select will update the collection when the turn of the selected model
+                    // has come. Don't do an auto selection here, then. (And set a flag for the remaining add events, so
+                    // the expensive search for the selected model does not get repeated.)
+
+                    if ( this.find( function ( model ) { return model.selected; } ) ) this._cycle_skipSelectInitial = true;
+                }
+
+                if ( this.at( autoSelectAt ) && !this._cycle_skipSelectInitial ) this.selectAt( autoSelectAt );
             }
+
+            // Delete the skip flag if necessary, once Backbone.Select has updated the selection
+            if ( this.selected && this._cycle_skipSelectInitial ) delete this._cycle_skipSelectInitial;
         },
 
         selectOnRemove: function ( model, collection, options ) {
@@ -189,18 +210,19 @@
      *
      * Backbone.Select.Many is not supported yet.
      *
-     * @param {Object}  hostObject
-     * @param {Backbone.Cycle.SelectableModel[]} models     models passed to the collection constructor
-     * @param {Object}  [options]
-     * @param {string}  [options.initialSelection="none"]   which item to select when the collection is reset: "first",
-     *                                                      "none"
-     * @param {string}  [options.selectIfRemoved="none"]    which item to select when the currently selected item is
-     *                                                      removed: "prev", "next", "prevNoLoop", "nextNoLoop", "none"
-     * @param {boolean} [options.enableModelSharing=false]  enables model-sharing mode (see Backbone.Select)
+     * @param {Object}        hostObject
+     * @param {Backbone.Cycle.SelectableModel[]} models           models passed to the collection constructor
+     * @param {Object}        [options]
+     * @param {string|number} [options.initialSelection="none"]   which item to select when the collection is reset:
+     *                                                            "first", "last", "none", item index
+     * @param {string}        [options.selectIfRemoved="none"]    which item to select when the currently selected item
+     *                                                            is removed: "prev", "next", "prevNoLoop", "nextNoLoop",
+     *                                                            "none"
+     * @param {boolean}       [options.enableModelSharing=false]  enables model-sharing mode (see Backbone.Select)
      */
     Backbone.Cycle.SelectableCollection.applyTo = function ( hostObject, models, options ) {
 
-        var enableInitialSelection, enableSelectIfRemoved, enableModelSharing;
+        var enableInitialSelection, enableSelectIfRemoved, enableModelSharing, autoSelectIndex;
 
         // Enforcing the presence of the models argument. (The rest of the arg validation is handled by
         // Backbone.Select.One.)
@@ -213,7 +235,7 @@
         hostObject.selectIfRemoved  = options.selectIfRemoved || "none";
 
         // Validate the option values
-        if ( ! _.contains( [ "first", "none" ], hostObject.initialSelection ) ) throw new Error( 'Invalid initialSelection value "' + hostObject.initialSelection + '"' );
+        if ( ! _.contains( [ "first", "last", "none" ], hostObject.initialSelection ) && ! is_integer( hostObject.initialSelection ) ) throw new Error( 'Invalid initialSelection value "' + hostObject.initialSelection + '"' );
         if ( ! _.contains( [ "prev", "next", "prevNoLoop", "nextNoLoop", "none" ], hostObject.selectIfRemoved ) ) throw new Error( 'Invalid selectIfRemoved value "' + hostObject.selectIfRemoved + '"' );
 
         enableInitialSelection = hostObject.initialSelection !== "none";
@@ -232,8 +254,13 @@
         if ( enableInitialSelection ) {
 
             if ( !hostObject.selected && models && models.length ) {
-                hostObject.selected = models[0];
-                models[0].select();
+
+                autoSelectIndex = getAutoSelectIndex( hostObject.initialSelection, models );
+                if ( models[autoSelectIndex] ) {
+                    hostObject.selected = models[autoSelectIndex];
+                    models[autoSelectIndex].select();
+                }
+
             }
 
             hostObject.listenTo( hostObject, "add", hostObject.selectInitial );
@@ -248,6 +275,16 @@
         var inRange = index % collection.length;
         if ( inRange < 0 ) inRange = collection.length + inRange;  // in fact subtracting from length because inRange < 0
         return collection.at( inRange );
+    }
+
+    // Also accepts integers as a string, e.g. "42". Rejects empty strings etc. See http://stackoverflow.com/a/14794066/508355
+    // and related fiddle.
+    function is_integer ( value ) {
+        return !isNaN( value ) && parseInt( Number( value ), 10 ) == value && !isNaN( parseInt( value, 10 ) ); // jshint ignore:line
+    }
+
+    function getAutoSelectIndex ( autoSelectValue, models ) {
+        return autoSelectValue === "first" ? 0 : ( autoSelectValue === "last" ? models.length - 1 : parseInt( autoSelectValue, 10 ) );
     }
 
 }( Backbone, _ ));
