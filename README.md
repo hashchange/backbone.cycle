@@ -299,6 +299,40 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
+## Release notes
+
+### v1.0.9, 1.0.10
+
+* Minor bug and documentation fixes
+
+### v1.0.8
+
+* Fleshed out package.json for npm installs
+
+### v1.0.4 - 1.0.7
+
+* Minor bug fixes
+
+### v1.0.3
+
+* Relaxed dependency requirements
+
+### v1.0.2
+
+* Added _cycleType property to identify mixins in a model or collection
+* Fixed line endings in minified AMD build, added source map
+* Updated Backbone.Select dependency
+* Fixed bower.json ignore list
+* Fixed typos in readme
+
+### v.1.0.1
+
+* Added documentation
+
+### v.1.0.0
+
+* Initial version
+
 ## License
 
 MIT.
