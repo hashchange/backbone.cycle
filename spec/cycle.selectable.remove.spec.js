@@ -2,7 +2,7 @@
 (function () {
     "use strict";
 
-    describe( 'Options for SelectableCollection: initialSelection', function () {
+    describe( 'Options for SelectableCollection: selectIfRemoved', function () {
 
         var Model, m1, m2, m3, models, Collection, collection;
 
