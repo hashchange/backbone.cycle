@@ -55,7 +55,7 @@ If you are not familiar with [Backbone.Select][], you should [have a look there]
 
 [Backbone][] and [Backbone.Select][] are the only dependencies. Include backbone.cycle.js after [Backbone][] and [Backbone.Select][].
 
-The stable version of Backbone.Cycle is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.cycle`. With npm, it is `npm install backbone.cycle`.
+The stable version of Backbone.Cycle is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install backbone.cycle`. With npm, it is `npm install backbone.cycle`.
 
 ## Components
 
@@ -352,7 +352,12 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 MIT.
 
-Copyright (c) 2014 Michael Heim.
+Copyright (c) 2014, 2015 Michael Heim.
+
+[dist-dev]: https://raw.github.com/hashchange/backbone.cycle/master/dist/backbone.cycle.js "backbone.cycle.js"
+[dist-prod]: https://raw.github.com/hashchange/backbone.cycle/master/dist/backbone.cycle.min.js "backbone.cycle.min.js"
+[dist-amd-dev]: https://raw.github.com/hashchange/backbone.cycle/master/dist/amd/backbone.cycle.js "backbone.cycle.js, AMD build"
+[dist-amd-prod]: https://raw.github.com/hashchange/backbone.cycle/master/dist/amd/backbone.cycle.min.js "backbone.cycle.min.js, AMD build"
 
 [Backbone]: http://backbonejs.org/ "Backbone.js"
 [Backbone.Select]: https://github.com/hashchange/backbone.select#readme "Backbone.Select"
