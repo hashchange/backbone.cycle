@@ -164,12 +164,19 @@
      */
     Backbone.Cycle = {
 
-        /**
-         * Model mixin
-         *
-         * No setup necessary. Apply it to the host object with `extend`.
-         */
-        Model: CycleMixins.Model,
+        Model: {
+
+            /**
+             * Model mixin
+             * -----------
+             *
+             * @param {Object} hostObject
+             */
+            applyTo: function ( hostObject ) {
+                _.extend( hostObject, CycleMixins.Model );
+            }
+
+        },
 
         SelectableModel: {
 

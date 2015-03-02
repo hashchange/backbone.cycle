@@ -88,11 +88,17 @@ Navigation always happens in the context of a collection. That collection is ref
 
 You can override the collection context, though, and pass a collection as an argument to any of the above methods. For instance, `model.ahead(5, otherCollection)` returns the model which is five items ahead of `model` in `otherCollection`. Likewise, you'd call `next` with a collection context as `model.next(otherCollection)`. 
 
-#### Application
+#### Applying the mixin
 
-Backbone.Cycle.Model is a plain object. It is applied to a model type simply by extending a base type:
+Backbone.Cycle.Model is applied to a model in `initialize`:
 
-    MyModelType = Backbone.Model.extend( Backbone.Cycle.Model ).extend( ... );
+```javascript
+var Model = Backbone.Model.extend( {
+    initialize: function () {
+        Backbone.Cycle.Model.applyTo( this );
+    }
+} );
+```
 
 
 #### Usage examples for Backbone.Cycle.Model
@@ -100,7 +106,11 @@ Backbone.Cycle.Model is a plain object. It is applied to a model type simply by 
 The basic usage, plain and simple:
 
 ```javascript
-var Model = Backbone.Model.extend( Backbone.Cycle.Model );
+var Model = Backbone.Model.extend( {
+    initialize: function () {
+        Backbone.Cycle.Model.applyTo( this );
+    }
+} );
 
 var m1 = new Model( {id: "m1"} ),
     m2 = new Model( {id: "m2"} ),
@@ -160,11 +170,11 @@ Navigation methods, like `next()`, appear in SelectableModel and SelectableColle
 
 Unsurprisingly, then, SelectableCollection methods require that a model has been selected in the collection. Otherwise, an error is thrown. The only exception is `selectAt`, which is purely index-based and works without an existing selection.
 
-#### Application
+#### Applying the mixins
 
 Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection must be used together. Only SelectableModels can be added to a SelectableCollection.
 
-Both mixins are constructor-based and must be applied in `initialize`:
+Both mixins are applied in `initialize`:
 
 ```javascript
 var Model = Backbone.Model.extend( {
@@ -309,6 +319,12 @@ In case anything about the test and build process needs to be changed, have a lo
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
 ## Release notes
+
+### v.2.0.0
+
+* Added an `applyTo` setup method for Backbone.Cycle.Model, protecting the mixin from unintentional modification. The setup method _must_ be used - applying the mixin just by extending the host model no longer works.
+* Fixed compatibility with Underscore 1.7.0
+* Switched to plain objects as mixins internally
 
 ### v1.1.0
 

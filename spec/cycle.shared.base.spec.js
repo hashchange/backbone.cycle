@@ -7,7 +7,11 @@
         var Model, m1, m2, m3, mA, mB, mC, c1, c2, cA;
 
         beforeEach( function () {
-            Model = Backbone.Model.extend( Backbone.Cycle.Model );
+            Model = Backbone.Model.extend( {
+                initialize: function () {
+                    Backbone.Cycle.Model.applyTo( this );
+                }
+            } );
 
             m1 = new Model();
             m2 = new Model();
