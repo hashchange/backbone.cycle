@@ -204,13 +204,13 @@ You have three options to choose from.
 
 - `autoSelect`:
 
-  Set it to `"first"` if you want the first model in a collection to be selected automatically. You can also set the option to `"last"`, or provide the index of the model you'd like to see auto-selected. If the index does not exist at the time, that's fine - `autoSelect` just won't select anything then.
+  Set it to `"first"` if you want the first model in a collection to be selected automatically. You can also set the option to `"last"`, or provide the index of the model you'd like to see auto-selected. If the index does not exist at the time, that's fine – `autoSelect` just won't select anything then.
   
-  The `autoSelect` setting kicks in when the initial set of models is passed to a collection - be it to the constructor, with `add`, or with `reset`. Auto select can also be triggered later on in the lifecycle of a collection: when you do an `add` or `reset` while there is no selection in the collection.
+  The `autoSelect` setting kicks in when the initial set of models is passed to a collection – be it to the constructor, with `add`, or with `reset`. Auto select can also be triggered later on in the lifecycle of a collection: when you do an `add` or `reset` while there is no selection in the collection.
   
   It's important to note that `autoSelect` will _only_ spring into action during instantiation, with an `add`, or with a `reset`. It won't guarantee that there is a selected item all the time. If you deselect manually, nothing will happen unless you `add` or `reset` later on.
    
-  `autoSelect` may have a performance impact when adding items to really large collections. Those are better handled without `autoSelect` magic, at least if you add items frequently. The negative effect is limited to actual `add` calls, though - resets are not affected.
+  `autoSelect` may have a performance impact when adding items to really large collections. Those are better handled without `autoSelect` magic, at least if you add items frequently. The negative effect is limited to actual `add` calls, though – resets are not affected.
   
   The `autoSelect` option is off by default, with value `autoSelect: "none"`.
 
@@ -322,7 +322,7 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ### v.2.0.0
 
-* Added an `applyTo` setup method for Backbone.Cycle.Model, protecting the mixin from unintentional modification. The setup method _must_ be used - applying the mixin just by extending the host model no longer works.
+* Added an `applyTo` setup method for Backbone.Cycle.Model, protecting the mixin from unintentional modification. The setup method _must_ be used – applying the mixin just by extending the host model no longer works.
 * Fixed compatibility with Underscore 1.7.0
 * Switched to plain objects as mixins internally
 
@@ -381,10 +381,10 @@ Copyright (c) 2014, 2015 Michael Heim.
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
 [Grunt]: http://gruntjs.com/ "Grunt: The JavaScript Task Runner"
-[Karma]: http://karma-runner.github.io/ "Karma - Spectacular Test Runner for Javascript"
-[Mocha]: http://visionmedia.github.io/mocha/ "Mocha - the fun, simple, flexible JavaScript test framework"
+[Karma]: http://karma-runner.github.io/ "Karma – Spectacular Test Runner for Javascript"
+[Mocha]: http://visionmedia.github.io/mocha/ "Mocha – the fun, simple, flexible JavaScript test framework"
 [Chai]: http://chaijs.com/ "Chai: a BDD / TDD assertion library"
-[Sinon]: http://sinonjs.org/ "Sinon.JS - Versatile standalone test spies, stubs and mocks for JavaScript"
+[Sinon]: http://sinonjs.org/ "Sinon.JS – Versatile standalone test spies, stubs and mocks for JavaScript"
 [JSHint]: http://www.jshint.com/ "JSHint, a JavaScript Code Quality Tool"
 
 [backbone-model-initialize]: http://backbonejs.org/#Model-constructor "Backbone Documentation: Model constructor/initialize"
