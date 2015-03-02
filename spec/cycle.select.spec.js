@@ -300,6 +300,26 @@
 
         } );
 
+        describe( 'The mixin should be protected from modification', function () {
+
+            it( 'when overwriting the next() method on one collection, the next() method of another collection stays intact', function () {
+                var m4, m5, collection2;
+
+                // Overwriting twice to capture every possibility: once before and once after the instantiation of a new
+                // collection with the mixin.
+                collection.next = function () {};
+
+                m4 = new Model();
+                m5 = new Model();
+                collection2 = new Collection( [m4, m5] );
+
+                collection.next = function () {};
+
+                m4.select();
+                expect( collection2.next() ).to.deep.equal( m5 );
+            } );
+
+        } );
     } );
 
 })();

@@ -131,6 +131,25 @@
 
         } );
 
+        describe( 'The mixin should be protected from modification', function () {
+
+            it( 'when overwriting the next() method on one model, the next() method of another model stays intact', function () {
+                var m4, m5, collection2;
+
+                // Overwriting twice to capture every possibility: once before and once after the instantiation of new
+                // models with the mixin.
+                m1.next = m2.next = m3.next = function () {};
+
+                m4 = new Model();
+                m5 = new Model();
+                collection2 = new Backbone.Collection( [m4, m5] );
+
+                m1.next = m2.next = m3.next = function () {};
+                expect( m4.next() ).to.deep.equal( m5 );
+            } );
+
+        } );
+
     } );
 
 })();
