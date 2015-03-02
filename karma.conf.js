@@ -29,8 +29,6 @@ module.exports = function(config) {
       'bower_components/backbone/backbone.js',
       'bower_components/backbone.select/dist/backbone.select.js',
 
-      'lib-other/**/*.js',
-
       // Component under test
       'src/backbone.cycle.js',
 

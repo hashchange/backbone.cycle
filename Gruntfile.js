@@ -93,16 +93,6 @@ module.exports = function(grunt) {
       components: 'src/**/*.js'
     },
 
-    plato: {
-      cycle: {
-        src: 'src/*.js',
-        dest: 'reports',
-        options: {
-          jshint: grunt.file.readJSON('.jshintrc')
-        }
-      }
-    },
-
     'sails-linker': {
       options: {
         startTag: '<!--SCRIPTS-->',
@@ -132,9 +122,13 @@ module.exports = function(grunt) {
         files: {
           // the target file is changed in place; for generating copies, run preprocess first
           //
+          // The util/core.js file must be loaded first, and typeof.js must be loaded before match.js.
+          //
           // mock.js must be loaded last (specifically, after spy.js). For the pattern achieving it, see
           // http://gruntjs.com/configuring-tasks#globbing-patterns
           'web-mocha/index.html': [
+            SINON_SOURCE_DIR + 'util/core.js',
+            SINON_SOURCE_DIR + 'typeof.js',
             SINON_SOURCE_DIR + '**/*.js',
             '!' + SINON_SOURCE_DIR + 'mock.js',
             SINON_SOURCE_DIR + 'mock.js'
@@ -208,7 +202,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-plato');
   grunt.loadNpmTasks('grunt-preprocess');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
