@@ -1,4 +1,4 @@
-// Backbone.Cycle, v2.0.0
+// Backbone.Cycle, v2.0.1
 // Copyright (c)2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle
@@ -34,7 +34,7 @@
                     index = collection.indexOf( this );
 
                 if ( index === -1 ) throw new Error( "Model " + this.cid + "doesn't exist in the collection." );
-                return collection.at( index + n );
+                return at_noLoop( index + n, collection );
             },
             behindNoLoop: function ( n, collectionContext ) {
                 return this.aheadNoLoop( -n, collectionContext );
@@ -59,7 +59,7 @@
 
             selectAt: function ( index ) {
                 // Convenience method, unrelated to the cycle functionality
-                var model = this.at( index );
+                var model = at_noLoop( index, this );
                 if ( model ) {
                     model.select();
                 } else {
@@ -100,7 +100,7 @@
             },
             aheadNoLoop: function ( n ) {
                 if ( !this.selected ) throw new Error( "Illegal call of SelectableCollection navigation method. No model had been selected to begin with." );
-                return this.at( this.indexOf( this.selected ) + n );
+                return at_noLoop( this.indexOf( this.selected ) + n, this );
             },
             behindNoLoop: function ( n ) {
                 return this.aheadNoLoop( -n );
@@ -132,7 +132,7 @@
                         if ( this.find( function ( model ) { return model.selected; } ) ) this._cycle_skipSelectInitial = true;
                     }
 
-                    if ( this.at( autoSelectAt ) && !this._cycle_skipSelectInitial ) this.selectAt( autoSelectAt );
+                    if ( at_noLoop( autoSelectAt, this ) && !this._cycle_skipSelectInitial ) this.selectAt( autoSelectAt );
                 }
 
                 // Delete the skip flag if necessary, once Backbone.Select has updated the selection
@@ -288,6 +288,11 @@
         var inRange = index % collection.length;
         if ( inRange < 0 ) inRange = collection.length + inRange;  // in fact subtracting from length because inRange < 0
         return collection.at( inRange );
+    }
+
+    function at_noLoop ( index, collection ) {
+        var isInRange = index >= 0 && index < collection.length;
+        return isInRange ? collection.at( index ) : undefined;
     }
 
     // Also accepts integers as a string, e.g. "42". Rejects empty strings etc. See http://stackoverflow.com/a/14794066/508355
