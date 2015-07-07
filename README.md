@@ -320,6 +320,10 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release notes
 
+### v.2.0.1
+
+* Fixed compatibility with Backbone 1.2.x
+
 ### v.2.0.0
 
 * Added an `applyTo` setup method for Backbone.Cycle.Model, protecting the mixin from unintentional modification. The setup method _must_ be used – applying the mixin just by extending the host model no longer works.
