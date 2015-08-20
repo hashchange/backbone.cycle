@@ -1,4 +1,4 @@
-// Backbone.Cycle, v2.0.1
+// Backbone.Cycle, v2.0.2
 // Copyright (c)2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle

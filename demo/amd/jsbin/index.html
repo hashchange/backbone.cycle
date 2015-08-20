@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Backbone.Cycle 2.0.2, demo (AMD)</title>
+    <meta name="description" content="Backbone.Cycle 2.0.2, demo (AMD)">
+
+    <!-- ATTN Foundation loaded without JS - stay clear of JS-driven widgets, or add the JS setup -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/normalize.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/foundation.css">
+
+    <link rel="stylesheet" href="https://cdn.rawgit.com/hashchange/backbone.cycle/2.0.2/demo/amd/amd.css">
+</head>
+<body>
+
+    <section>
+
+        <h1 id="header" class="row text-center">Backbone.Cycle 2.0.2, demo (AMD)</h1>
+
+        <div class="row">
+            <div class="medium-6 large-4 medium-centered columns">
+                <ul id="pagination" class="pagination">
+                    <li id="arrowPrev" class="arrow"><a href="#">&laquo;</a></li>
+                    <li id="arrowNext" class="arrow right"><a href="#">&raquo;</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="stage" class="medium-6 large-4 medium-centered columns item"></div>
+        </div>
+
+        <div class="row">
+            <div id="controls" class="medium-6 large-4 medium-centered columns item">
+                <a  id="remove" href="#" class="button">Remove from collection</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <ul id="itemlist" class="small-block-grid-3 medium-block-grid-5 large-block-grid-12"></ul>
+        </div>
+
+    </section>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js"></script>
+    <script src="https://cdn.rawgit.com/hashchange/backbone.cycle/2.0.2/demo/amd/jsbin/require-config.js"></script>
+
+</body>
+</html>
