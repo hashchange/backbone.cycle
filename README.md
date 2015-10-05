@@ -9,6 +9,7 @@ With Backbone.Cycle options, you enable predefined, common behaviours, like alwa
 Backbone.Cycle is built on top of [Backbone.Select][]. The selection features are identical. Backbone.Cycle adds navigation methods and options.
 
 - Backbone.Select is designed with a minimal surface area. As few methods as possible are added to your objects. Basically, all you can do is `select` and `deselect`. The idea is that you should be able to use Backbone.Select mixins pretty much everywhere, with a near-zero risk of conflicts.
+
 - With Backbone.Cycle, you get a little more in terms of methods and behaviour. It may often be more convenient to use and probably is the better choice for a greenfield project.
 
 ## The gist of it
@@ -16,6 +17,8 @@ Backbone.Cycle is built on top of [Backbone.Select][]. The selection features ar
 Perhaps the best way to explain what Backbone.Cycle does, before getting into the details, is an example.
 
 ```javascript
+// --- (1) Setup ---
+
 var Model = Backbone.Model.extend( {
     initialize: function () {
         // Applies the mixin:
@@ -34,16 +37,23 @@ var m1 = new Model( {id: "m1"} ),
     m2 = new Model( {id: "m2"} ),
     m3 = new Model( {id: "m3"} );
 
+// --- (2) Defining behaviours ---
+
 var collection = new Collection(
     [m1, m2, m3],
     { autoSelect: "first", selectIfRemoved: "next" }
 );
 
 console.log( collection.selected.id ); // prints "m1" because of autoSelect: "first"
+
+// --- (3) Navigating ---
+
 console.log( m2.next().id );           // prints "m3"
 console.log( m1.ahead( 2 ).id );       // prints "m3"
 
 collection.selectNext();               // selects m2
+
+// --- (4) Removal behaviour ---
 
 collection.remove( m2 );
 console.log( collection.selected.id ); // prints "m3" because of selectIfRemoved: "next"
@@ -64,31 +74,33 @@ There are three components in this package:
 - Backbone.Cycle.Model just offers basic navigation features
 - Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection, used in tandem, provide the full feature set.
 
-### Basic navigation: Backbone.Cycle.Model
+## Basic navigation: Backbone.Cycle.Model
 
 The basic navigation methods are provided by Backbone.Cycle.Model. The component doesn't include the ability to select items.
 
-#### Methods of Backbone.Cycle.Model
+### Methods of Backbone.Cycle.Model
 
 There are two kinds of methods in Backbone.Cycle.Model.
 
-- Looping navigation methods: 
+#### Looping navigation methods 
   
   `model.next()`, `model.prev()`, `model.ahead(n)`, `model.behind(n)`. 
 
-   They return the next or previous model in the collection, relative to the model the method is called on. `ahead` and `behind` return a model which is _n_ items ahead or back. Once the final item of the collection is reached, the methods loop and continue from the first item, or from the last item when moving in the opposite direction.
+They return the next or previous model in the collection, relative to the model the method is called on. `ahead` and `behind` return a model which is _n_ items ahead or back. Once the final item of the collection is reached, the methods loop and continue from the first item, or from the last item when moving in the opposite direction.
 
-- Non-looping navigation methods: 
+#### Non-looping navigation methods 
   
-  `model.nextNoLoop()`, `model.prevNoLoop()`, `model.aheadNoLoop(n)`, `model.behindNoLoop(n)`. 
+`model.nextNoLoop()`, `model.prevNoLoop()`, `model.aheadNoLoop(n)`, `model.behindNoLoop(n)`. 
 
-  When these methods try to access a model beyond the boundaries of the collection, they return `undefined`.
+When you try to access a model beyond the boundaries of the collection, these methods return `undefined`.
+
+#### Collection context
   
 Navigation always happens in the context of a collection. That collection is referenced in the [`collection` property][backbone-model-initialize] of the model. If a model is part of more than one collection, `model.collection` refers to the one the model was added to first.
 
-You can override the collection context, though, and pass a collection as an argument to any of the above methods. For instance, `model.ahead(5, otherCollection)` returns the model which is five items ahead of `model` in `otherCollection`. Likewise, you'd call `next` with a collection context as `model.next(otherCollection)`. 
+You can override the collection context, though. Just pass a collection as an argument to any of the above methods. For instance, `model.ahead(5, otherCollection)` returns the model which is five items ahead of `model` in `otherCollection`. Likewise, you'd call `next` with a collection context as `model.next(otherCollection)`. 
 
-#### Applying the mixin
+### Applying the mixin
 
 Backbone.Cycle.Model is applied to a model in `initialize`:
 
@@ -100,8 +112,7 @@ var Model = Backbone.Model.extend( {
 } );
 ```
 
-
-#### Usage examples for Backbone.Cycle.Model
+### Usage examples for Backbone.Cycle.Model
 
 The basic usage, plain and simple:
 
@@ -132,45 +143,57 @@ console.log( m2.next( otherCollection ).id );     // prints "m1"
 console.log( m3.ahead( 2, otherCollection ).id ); // prints "m1"
 ```
 
-### Navigating with selections: Backbone.Cycle.SelectableModel, Backbone.Cycle.SelectableCollection
+## Navigating with selections: Backbone.Cycle.SelectableModel, Backbone.Cycle.SelectableCollection
 
-Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection add methods for selecting items. They also give you options for automatic selections. Both components must be used in tandem.
+Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection add methods for selecting items. They also give you options for automatic selections. **Both components must be used in tandem.**
 
-#### Methods 
+### Inheriting from Backbone.Select
 
 Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection inherit the features of [Backbone.Select][]. A SelectableCollection allows one model to be selected at a time; it is derived from Backbone.Select.One. 
 
 As a result, you can `select()` models, retrieve the `selected` model from a collection, listen to `reselect:one` or `deselected` events, implement an `onSelect` event handler etc. See the [Backbone.Select documentation][Backbone.Select] for more on selection-related methods, properties and events.
 
+### Model methods 
+
 Beyond the Backbone.Select features, a SelectableModel exposes the same methods as a basic Backbone.Cycle.Model. Call `next()`, `ahead(n)` etc as [described above][Cycle.Model-methods].
 
-A SelectableCollection has similar methods.
+### Collection methods
 
-- Looping navigation methods: 
+A SelectableCollection has methods matching those a SelectableModel.
+
+#### Looping navigation methods
   
-  `collection.next()`, `collection.prev()`, `collection.ahead(n)`, `collection.behind(n)`. 
+`collection.next()`, `collection.prev()`, `collection.ahead(n)`, `collection.behind(n)`. 
 
-   They return the next or previous model in the collection, relative to the selected model. `ahead` and `behind` return a model _n_ items ahead or back. Once the final item of the collection is reached, the methods loop and continue from the first item, or from the last item when moving in the opposite direction.
+They return the next or previous model in the collection, relative to the selected model. `ahead` and `behind` return a model _n_ items ahead or back. Once the final item of the collection is reached, the methods loop and continue from the first item, or from the last item when moving in the opposite direction.
 
-- Non-looping navigation methods: 
+#### Non-looping navigation methods
   
-  `collection.nextNoLoop()`, `collection.prevNoLoop()`, `collection.aheadNoLoop(n)`, `collection.behindNoLoop(n)`. 
+`collection.nextNoLoop()`, `collection.prevNoLoop()`, `collection.aheadNoLoop(n)`, `collection.behindNoLoop(n)`. 
 
-  When these methods try to access a model beyond the boundaries of the collection, they return `undefined`.
+When you try to access a model beyond the boundaries of the collection, these methods return `undefined`.
 
-- Looping and non-looping selection methods: 
+#### Looping and non-looping selection methods
   
-  `collection.selectNext()`, `collection.selectPrev()`, `collection.selectNextNoLoop()`, `collection.selectPrevNoLoop()`. 
+`collection.selectNext()`, `collection.selectPrev()`, `collection.selectNextNoLoop()`, `collection.selectPrevNoLoop()`. 
 
-   Instead of returning the model, these methods select it. Looping methods always do. But if a non-looping, `select*NoLoop` method tries to select a model beyond the boundaries of the collection, the method is a no-op, and the selection remains unchanged.
+Instead of returning the model, these methods select it. 
 
-- The odd one out: `selectAt(n)`. An unrelated convenience method, selects the model at index _n_.
+Looping methods always succeed. By contrast, if you call a non-looping, `select*NoLoop` method to select a model beyond the boundaries of the collection, the method is a no-op, and the selection remains unchanged.
+
+#### Other methods
+
+ `selectAt(n)`. 
+
+An unrelated convenience method, selects the model at index _n_.
+
+#### Collection methods require selection
 
 Navigation methods, like `next()`, appear in SelectableModel and SelectableCollection. Keep in mind, though, that SelectableModel methods calculate positions relative to the model they are invoked on. By contrast, SelectableCollection methods act relative to the _selected_ model in the collection.
 
 Unsurprisingly, then, SelectableCollection methods require that a model has been selected in the collection. Otherwise, an error is thrown. The only exception is `selectAt`, which is purely index-based and works without an existing selection.
 
-#### Applying the mixins
+### Applying the mixins
 
 Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection must be used together. Only SelectableModels can be added to a SelectableCollection.
 
@@ -194,66 +217,78 @@ Even though Backbone.Cycle depends on [Backbone.Select][], there is no need to a
 
 Backbone.Cycle.SelectableCollection allows only one selected item at a time. It is based on Backbone.Select.One. Its features make less sense if there are multiple selected items in a collection, so there is no corresponding component for Backbone.Select.Many in Backbone.Cycle.
 
-#### Options for a SelectableCollection
+### Setup options for a SelectableCollection
 
 When a SelectableCollection mixin is created with `applyTo`, you can pass an options object to it. Options define the behaviour when models are passed to a collection, removed from it, or when models are shared among multiple collections.
 
-##### What they are, what they do
+#### What they are, what they do
 
-You have three options to choose from.
+The use of options is demonstrated in the [introductory example][intro-example]. You have three options to choose from. 
 
-- `autoSelect`:
+##### `autoSelect`
 
-  Set it to `"first"` if you want the first model in a collection to be selected automatically. You can also set the option to `"last"`, or provide the index of the model you'd like to see auto-selected. If the index does not exist at the time, that's fine – `autoSelect` just won't select anything then.
+Set it to `"first"` if you want the first model in a collection to be selected automatically. You can also set the option to `"last"`, or provide the index of the model you'd like to see auto-selected. If the index does not exist at the time, that's fine – `autoSelect` just won't select anything then.
+
+###### Triggers
+
+The `autoSelect` setting kicks in when the initial set of models is passed to a collection – be it to the constructor, with `add`, or with `reset`. Auto select can also be triggered later on in the lifecycle of a collection: when you do an `add` or `reset` while there is no selection in the collection.
+
+It's important to note that `autoSelect` will _only_ spring into action during instantiation, with an `add`, or with a `reset`. It won't guarantee that there is a selected item all the time. If you deselect manually, nothing will happen unless you `add` or `reset` later on.
+
+###### Performance
+
+`autoSelect` may have a performance impact when adding items to really large collections. Those are better handled without `autoSelect` magic, at least if you add items frequently. The negative effect is limited to actual `add` calls, though – resets are not affected.
+
+###### Default
   
-  The `autoSelect` setting kicks in when the initial set of models is passed to a collection – be it to the constructor, with `add`, or with `reset`. Auto select can also be triggered later on in the lifecycle of a collection: when you do an `add` or `reset` while there is no selection in the collection.
+The `autoSelect` option is off by default, with value `autoSelect: "none"`.
+
+##### `selectIfRemoved`
+
+Use it if you want to select another model when the selected model is removed from the collection. The option value determines which model gets selected: `"prev"`, `"next"`, `"prevNoLoop"`, `"nextNoLoop"`. 
+
+The option is off by default, with value `selectIfRemoved: "none"`.
+
+##### `enableModelSharing`
+
+Set it to true if you share models among multiple collections. See the [section on model sharing][Backbone.Select-model-sharing] in the documentation of Backbone.Select. 
+
+Model sharing is disabled by default, but may be turned on automatically – see right below.
+
+#### Model sharing enabled automatically
+
+Watch out: When `autoSelect` or `selectIfRemoved` is set to anything other than `"none"`, model-sharing mode *is enabled automatically*. (That is because these options are based on the same event-handling mechanism.) [See below][options-caveats] for potential pitfalls.
+
+#### Restrictions and caveats when using setup options
+
+If you use any of the setup options, the following caveats apply.
+
+##### Call `close()`!
+
+When a collection is no longer in use, call `close()` on it to avoid memory leaks.
+
+So don't just replace a collection like this:
+
+    var myCol = new MySelectableCollection([myModel]);
+    // ... do stuff
+    myCol = new MySelectableCollection([myModel]);  // WRONG!
+
+Instead, call `close()` before you let an obsolete collection fade away into oblivion:
+
+    var myCol = new MySelectableCollection([myModel]);
+    // ... do stuff
+    myCol.close();
+    myCol = new MySelectableCollection([myModel]);
+
+Note that you don't need to call `close()` if you leave all setup options at their defaults.
+
+##### Don't use `silent` for additions and removals!
+
+As a general rule, don't use the `silent` option when adding models, removing them, or resetting a collection. 
   
-  It's important to note that `autoSelect` will _only_ spring into action during instantiation, with an `add`, or with a `reset`. It won't guarantee that there is a selected item all the time. If you deselect manually, nothing will happen unless you `add` or `reset` later on.
-   
-  `autoSelect` may have a performance impact when adding items to really large collections. Those are better handled without `autoSelect` magic, at least if you add items frequently. The negative effect is limited to actual `add` calls, though – resets are not affected.
-  
-  The `autoSelect` option is off by default, with value `autoSelect: "none"`.
+If you are sharing models among multiple collections, this is more than a general rule, it is a must. Never use the `silent` option for `add`, `remove` or `reset` actions.
 
-- `selectIfRemoved`:
-
-  Use it if you want to select another model when the selected model is removed from the collection. The option value determines which model gets selected: `"prev"`, `"next"`, `"prevNoLoop"`, `"nextNoLoop"`. 
-
-  The option is off by default, with value `selectIfRemoved: "none"`.
-
-- `enableModelSharing`:
-
-  Set it to true if you share models among multiple collections. See the [section on model sharing][Backbone.Select-model-sharing] in the documentation of Backbone.Select. Model sharing is disabled by default.
-
-Watch out: When `autoSelect` or `selectIfRemoved` is set to anything other than "none", model-sharing mode *is enabled automatically*. (That is because all options are based on the same event-handling mechanism.) [See below][options-caveats] for potential pitfalls.
-
-The use of options is demonstrated in the [introductory example][intro-example].
-
-##### Restrictions and caveats when using options
-
-If you use any of these options, the following caveats apply:
-
-- When a collection is no longer in use, call `close()` on it to avoid memory leaks.
-
-  So don't just replace a collection like this:
-
-        var myCol = new MySelectableCollection([myModel]);
-        // ... do stuff
-        myCol = new MySelectableCollection([myModel]);  // WRONG!
-
-  Instead, call `close()` before you let an obsolete collection fade away into oblivion:
-
-        var myCol = new MySelectableCollection([myModel]);
-        // ... do stuff
-        myCol.close();
-        myCol = new MySelectableCollection([myModel]);
-
-  Note that you don't need to call `close()` if you leave all options at their defaults.
-
-- As a general rule, don't use the `silent` option when adding models, removing them, or resetting a collection. 
-  
-  If you are sharing models among multiple collections, this is more than a general rule, it is a must. Never use the `silent` option for `add`, `remove` or `reset` actions.
-
-##### Workarounds for silent actions
+#### Workarounds for `silent` actions
 
 If you are not actually sharing models among collections, you can get away with silent actions if you watch out for the following traps.
 
@@ -272,7 +307,7 @@ If you are not actually sharing models among collections, you can get away with 
 
 Confused? Fair enough. Don't use `silent` then ;).
 
-#### Usage examples for Backbone.Cycle.SelectableCollection
+### Usage examples for Backbone.Cycle.SelectableCollection
 
 Check out the [introductory example][intro-example].
 
@@ -396,5 +431,5 @@ Copyright (c) 2014, 2015 Michael Heim.
 [Backbone.Select-intro-example]: https://github.com/hashchange/backbone.select#an-introductory-example "Backbone.Select: An introductory example"
 
 [Cycle.Model-methods]: #methods-of-backbonecyclemodel
-[options-caveats]: #restrictions-and-caveats-when-using-options
+[options-caveats]: #restrictions-and-caveats-when-using-setup-options
 [intro-example]: #the-gist-of-it
