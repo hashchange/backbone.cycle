@@ -32,6 +32,9 @@ module.exports = function(config) {
       // Component under test
       'src/backbone.cycle.js',
 
+      // Test helpers
+      'spec/helpers/**/*.js',
+
       // Tests
       'spec/**/*.+(spec|test).js'
     ],

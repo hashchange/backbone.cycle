@@ -4,9 +4,11 @@
 
     describe( 'Select mixins: Backbone.Cycle.SelectableModel, Backbone.Cycle.SelectableCollection', function () {
 
-        var Model, Collection, m1, m2, m3, collection;
+        var Model, Collection, m1, m2, m3, collection, collectionErrorMessage;
 
         beforeEach( function () {
+            collectionErrorMessage = 'Illegal call of SelectableCollection navigation method. No model had been selected to begin with (using label "selected").';
+
             Model = Backbone.Model.extend( {
                 initialize: function () {
                     Backbone.Cycle.SelectableModel.applyTo( this );
@@ -62,7 +64,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.next() ; } ).to.throw( Error );
+                expect( function () { collection.next() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -80,7 +82,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.prev() ; } ).to.throw( Error );
+                expect( function () { collection.prev() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -103,7 +105,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.ahead(2) ; } ).to.throw( Error );
+                expect( function () { collection.ahead(2) ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -126,7 +128,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.behind(2) ; } ).to.throw( Error );
+                expect( function () { collection.behind(2) ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -144,7 +146,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.nextNoLoop() ; } ).to.throw( Error );
+                expect( function () { collection.nextNoLoop() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -162,7 +164,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.prevNoLoop() ; } ).to.throw( Error );
+                expect( function () { collection.prevNoLoop() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -180,7 +182,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.aheadNoLoop(2) ; } ).to.throw( Error );
+                expect( function () { collection.aheadNoLoop(2) ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -198,7 +200,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.behindNoLoop(2) ; } ).to.throw( Error );
+                expect( function () { collection.behindNoLoop(2) ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -218,7 +220,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.selectNext() ; } ).to.throw( Error );
+                expect( function () { collection.selectNext() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -238,7 +240,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.selectPrev() ; } ).to.throw( Error );
+                expect( function () { collection.selectPrev() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -258,7 +260,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.selectNextNoLoop() ; } ).to.throw( Error );
+                expect( function () { collection.selectNextNoLoop() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -278,7 +280,7 @@
             } );
 
             it( 'throws an error if no model is selected', function () {
-                expect( function () {  collection.prevNoLoop() ; } ).to.throw( Error );
+                expect( function () { collection.prevNoLoop() ; } ).to.throw( collectionErrorMessage );
             } );
 
         } );
@@ -291,11 +293,11 @@
             } );
 
             it( 'throws an error if the index is beyond the end of the collection', function () {
-                expect( function () {  collection.selectAt(3) ; } ).to.throw( Error );
+                expect( function () { collection.selectAt( 3 ) ; } ).to.throw( "Model with index 3 doesn't exist in the collection and can't be selected." );
             } );
 
             it( 'throws an error if the index is negative', function () {
-                expect( function () {  collection.selectAt(-1) ; } ).to.throw( Error );
+                expect( function () { collection.selectAt( -1 ) ; } ).to.throw( "Model with index -1 doesn't exist in the collection and can't be selected." );
             } );
 
         } );

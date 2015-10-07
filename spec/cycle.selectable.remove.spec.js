@@ -16,8 +16,8 @@
 
         beforeEach( function () {
             Model = Backbone.Model.extend( {
-                initialize: function () {
-                    Backbone.Cycle.SelectableModel.applyTo( this );
+                initialize: function ( attributes, options ) {
+                    Backbone.Cycle.SelectableModel.applyTo( this, options );
                 }
             } );
 
@@ -36,9 +36,10 @@
 
         describe( 'By default, when creating a collection', function () {
 
-            it( 'has its selectIfRemoved property set to "none"', function () {
+            it( 'has its selectIfRemoved option set to "none"', function () {
+                // Internally, "none" is represented by the absence of an entry in _cycleOpts.selectIfRemoved
                 collection = new Collection( models );
-                expect( collection.selectIfRemoved ).to.equal( "none" );
+                expect( collection._cycleOpts.selectIfRemoved ).to.deep.equal( {} );
             } );
 
         } );
@@ -46,12 +47,17 @@
         describe( 'Invalid option values', function () {
 
             it( 'the collection throws an error when an invalid option value is passed', function () {
-                expect(function () { new Collection( models, { selectIfRemoved: "foo" } ); } ).to.throw( Error );
+                expect( function () { new Collection( models, { selectIfRemoved: "foo" } ); } ).to.throw( 'selectIfRemoved option: Invalid value "foo"' );
+            } );
+
+            it( 'the collection throws an error when an invalid option value is passed as part of a hash', function () {
+                expect( function () { new Collection( models, { selectIfRemoved: { starred: "foo" } } ); } ).to.throw( 'selectIfRemoved option: Invalid value "foo" inside hash' );
             } );
 
             it( 'the collection ignores the option when explicitly set to undefined, and uses the default value "none"', function () {
+                // Internally, "none" is represented by the absence of an entry in _cycleOpts.selectIfRemoved
                 collection = new Collection( models, { selectIfRemoved: undefined } );
-                expect( collection.selectIfRemoved ).to.equal( "none" );
+                expect( collection._cycleOpts.selectIfRemoved ).to.deep.equal( {} );
             } );
 
         } );
@@ -63,28 +69,43 @@
                 expect( collection._modelSharingEnabled ).not.to.be.true;
             } );
 
-            it( 'the collection stays in standard mode when the selectIfRemoved option set to "none"', function () {
+            it( 'the collection stays in standard mode when the selectIfRemoved option is set to "none"', function () {
                 collection = new Collection( models, { selectIfRemoved: "none" } );
                 expect( collection._modelSharingEnabled ).not.to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option set to "prev"', function () {
+            it( 'the collection stays in standard mode when the selectIfRemoved option is set to a hash containing only "none" values', function () {
+                collection = new Collection( models, { selectIfRemoved: { starred: "none", picked: "none" } } );
+                expect( collection._modelSharingEnabled ).not.to.be.true;
+            } );
+
+            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "prev"', function () {
                 collection = new Collection( models, { selectIfRemoved: "prev" } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option set to "next"', function () {
+            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "next"', function () {
                 collection = new Collection( models, { selectIfRemoved: "next" } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option set to "prevNoLoop"', function () {
+            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "prevNoLoop"', function () {
                 collection = new Collection( models, { selectIfRemoved: "prevNoLoop" } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option set to "nextNoLoop"', function () {
+            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "nextNoLoop"', function () {
                 collection = new Collection( models, { selectIfRemoved: "nextNoLoop" } );
+                expect( collection._modelSharingEnabled ).to.be.true;
+            } );
+
+            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to a hash, with one property set to "next" and all others set to "none"', function () {
+                collection = new Collection( models, { selectIfRemoved: { selected: "none", starred: "next", ultraselected: "none" } } );
+                expect( collection._modelSharingEnabled ).to.be.true;
+            } );
+
+            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to a hash, with all properties set to "next"', function () {
+                collection = new Collection( models, { selectIfRemoved: { selected: "next", starred: "next", ultraselected: "next" } } );
                 expect( collection._modelSharingEnabled ).to.be.true;
             } );
 
@@ -267,6 +288,275 @@
                 collection.select( m3 );
                 collection.remove( m3 );
                 expect( collection.selected ).to.deep.equal( m2 );
+            } );
+
+        } );
+
+        describe( 'selectIfRemoved is set to a hash (label "starred" set to "next", label "picked" set to "prev"', function () {
+            var m4;
+
+            beforeEach( function () {
+                m4 = new Model();
+                models.push( m4 );
+
+                Collection = bindOptions( { selectIfRemoved: { starred: "next", picked: "prev" } } );
+                collection = new Collection( models );
+            } );
+
+            describe( 'When a model is removed which is not selected, starred or picked', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+                    m4.select( { label: "picked" } );
+
+                    collection.remove( m2 );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+                it( 'the starred model in the collection remains unchanged', function () {
+                    expect( collection.starred ).to.deep.equal( m1 );
+                } );
+
+                it( 'the picked model in the collection remains unchanged', function () {
+                    expect( collection.picked ).to.deep.equal( m4 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is selected, but not starred or picked', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+                    m4.select( { label: "picked" } );
+
+                    collection.remove( m3 );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection remains unchanged', function () {
+                    expect( collection.starred ).to.deep.equal( m1 );
+                } );
+
+                it( 'the picked model in the collection remains unchanged', function () {
+                    expect( collection.picked ).to.deep.equal( m4 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred, but not selected or picked', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+                    m4.select( { label: "picked" } );
+
+                    collection.remove( m1 );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m2 );
+                } );
+
+                it( 'the picked model in the collection remains unchanged', function () {
+                    expect( collection.picked ).to.deep.equal( m4 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred and picked, but not selected', function () {
+
+                beforeEach( function () {
+                    m2.select( { label: "starred" } );
+                    m2.select( { label: "picked" } );
+                    m3.select();
+
+                    collection.remove( m2 );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m3 );
+                } );
+
+                it( 'the picked model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.picked ).to.deep.equal( m1 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred, picked, and selected', function () {
+
+                beforeEach( function () {
+                    m2.select( { label: "starred" } );
+                    m2.select( { label: "picked" } );
+                    m2.select();
+
+                    collection.remove( m2 );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m3 );
+                } );
+
+                it( 'the picked model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.picked ).to.deep.equal( m1 );
+                } );
+
+            } );
+
+        } );
+
+        describe( 'The default label of the collection is set to "starred", and selectIfRemoved is set to "next"', function () {
+
+            beforeEach( function () {
+                Collection = bindOptions( { defaultLabel: "starred", selectIfRemoved: "next" } );
+                collection = new Collection( models );
+            } );
+
+            describe( 'When a model is removed which is neither selected nor starred', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+
+                    collection.remove( m2 );
+                } );
+
+                it( 'the starred model in the collection remains unchanged', function () {
+                    expect( collection.starred ).to.deep.equal( m1 );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is selected, but not starred', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+
+                    collection.remove( m3 );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection remains unchanged', function () {
+                    expect( collection.starred ).to.deep.equal( m1 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred, but not selected', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+
+                    collection.remove( m1 );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m2 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred and selected', function () {
+
+                beforeEach( function () {
+                    m2.select( { label: "starred" } );
+                    m2.select();
+
+                    collection.remove( m2 );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m3 );
+                } );
+
+            } );
+
+        } );
+
+        describe( 'selectIfRemoved in conjunction with an ignored label', function () {
+
+            // We only test selectIfRemoved with a hash here. When selectIfRemoved is set to a string, it is applied to
+            // the default label, and the default label can never be ignored.
+
+            describe( 'When selectIfRemoved is set to "none" for an ignored label', function () {
+
+                beforeEach( function () {
+                    Collection = bindOptions( { ignoreLabel: "starred", selectIfRemoved: { starred: "none" } } );
+                } );
+
+                it( 'the collection is created without an error', function () {
+                    expect( function () { new Collection( models ); } ).not.to.throw( Error );
+                } );
+
+                it( 'selecting a model with an ignored label works as usual', function () {
+                    collection = new Collection( models );
+                    m1.select( { label: "starred" } );
+
+                    expect( m1.starred ).to.equal( true );
+                    expect( collection.starred ).to.be.undefined;
+                } );
+
+                it( 'selecting a model with the default label works as usual', function () {
+                    collection = new Collection( models );
+                    m1.select();
+
+                    expect( m1.selected ).to.equal( true );
+                    expect( collection.selected ).to.deep.equal( m1 );
+                } );
+
+            } );
+
+            describe( 'When selectIfRemoved is set to a value other than "none" for an ignored label', function () {
+
+                beforeEach( function () {
+                    Collection = bindOptions( { ignoreLabel: "starred", selectIfRemoved: { starred: "next" } } );
+                } );
+
+                it( 'an error is thrown when the collection is created', function () {
+                    expect( function () { new Collection( models ); } ).to.throw( "Conflicting options: Can't define selectIfRemoved behaviour for label \"starred\" because it is ignored in the collection." );
+                } );
+
             } );
 
         } );
