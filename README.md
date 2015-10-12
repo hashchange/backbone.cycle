@@ -120,6 +120,16 @@ var Model = Backbone.Model.extend( {
 } );
 ```
 
+###### Signature, options
+
+The Backbone.Cycle.Model `applyTo()` signature is: 
+
+```js
+Backbone.Cycle.Model.applyTo( thisModel );
+```
+
+The method does not accept an options argument.
+
 ### Usage examples for Backbone.Cycle.Model
 
 The basic usage, plain and simple:
@@ -241,8 +251,8 @@ Both mixins are applied in `initialize`:
 
 ```javascript
 var Model = Backbone.Model.extend( {
-    initialize: function () {
-        Backbone.Cycle.SelectableModel.applyTo( this );
+    initialize: function ( attributes, options ) {
+        Backbone.Cycle.SelectableModel.applyTo( this, options );
     }
 } );
 
@@ -252,6 +262,25 @@ var Collection = Backbone.Collection.extend( {
     }
 } );
 ```
+###### Signature, options
+
+The Backbone.Cycle.SelectableModel `applyTo()` signature is: 
+
+```js
+Backbone.Cycle.SelectableModel.applyTo( thisModel, [options] );
+```
+
+You can pass an options hash as the second parameter to `.applyTo()`. Backbone.Cycle.SelectableModel recognizes the [options of Backbone.Select.Me models][Backbone.Select.Me-applyTo], and passes them on to the Select.Me mixin internally.
+
+The Backbone.Cycle.SelectableCollection `applyTo()` signature is: 
+
+```js
+Backbone.Cycle.SelectableModel.applyTo( thisCollection, models, [options] );
+```
+
+You can pass an options hash as the third parameter to `.applyTo()`. Backbone.Cycle.SelectableCollection recognizes the [options of a Backbone.Select.One collection][Backbone.Select.One-applyTo], and the following ones in addition: [`autoSelect`][autoselect-option], [`selectIfRemoved`][selectifremoved-option].
+
+###### Automatic inclusion of Backbone.Select mixins
 
 Even though Backbone.Cycle depends on [Backbone.Select][], there is no need to apply the Backbone.Select mixins in `initialize`. The Backbone.Cycle mixins do that themselves, behind the scenes.
 
@@ -263,7 +292,7 @@ When a SelectableCollection mixin is created with `applyTo`, you can pass an opt
 
 #### What they are, what they do
 
-The use of options is demonstrated in the [introductory example][intro-example]. You have three options to choose from. 
+The use of options is demonstrated in the [introductory example][intro-example]. A SelectableCollection supports all [options of a Backbone.Select.One collection][Backbone.Select.One-applyTo], as well as the ones listed below. 
 
 ##### `autoSelect` option
 
@@ -508,6 +537,8 @@ Copyright (c) 2014, 2015 Michael Heim.
 
 [Backbone.Select-intro-example]: https://github.com/hashchange/backbone.select#an-introductory-example "Backbone.Select: An introductory example"
 [Backbone.Select-demos]: https://github.com/hashchange/backbone.select#demos "Backbone.Select: Demos"
+[Backbone.Select.Me-applyTo]: https://github.com/hashchange/backbone.select#signature-options "Backbone.Select.Me: `applyTo` signature and options"
+[Backbone.Select.One-applyTo]: https://github.com/hashchange/backbone.select#signature-options-1 "Backbone.Select.One: `applyTo` signature and options"
 [Backbone.Select-select.one-silent]: https://github.com/hashchange/backbone.select#silent-option-1 "Backbone.Select: Select.One silent option"
 [Backbone.Select-custom-labels]: https://github.com/hashchange/backbone.select#custom-labels "Backbone.Select: Custom labels"
 [Backbone.Select-default-label]: https://github.com/hashchange/backbone.select#the-defaultlabel-setup-option "Backbone.Select: The `defaultLabel` setup option"
