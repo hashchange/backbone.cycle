@@ -1,4 +1,4 @@
-// Backbone.Cycle, v2.0.2
+// Backbone.Cycle, v2.1.0
 // Copyright (c)2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle
@@ -57,105 +57,123 @@
          */
         SelectableCollection: {
 
-            selectAt: function ( index ) {
+            selectAt: function ( index, options ) {
                 // Convenience method, unrelated to the cycle functionality
                 var model = at_noLoop( index, this );
                 if ( model ) {
-                    model.select();
+                    this.select( model, options );
                 } else {
                     throw new Error( "Model with index " + index + " doesn't exist in the collection and can't be selected." );
                 }
             },
 
-            selectNext: function () {
-                this.next().select();
+            selectNext: function ( options ) {
+                this.select( this.next( options ), options );
                 return this;
             },
-            selectPrev: function () {
-                this.prev().select();
+            selectPrev: function ( options ) {
+                this.select( this.prev( options ), options );
                 return this;
             },
-            selectNextNoLoop: function () {
-                var next = this.nextNoLoop();
-                if ( next ) next.select();
+            selectNextNoLoop: function ( options ) {
+                var next = this.nextNoLoop( options );
+                if ( next ) this.select( next, options );
                 return this;
             },
-            selectPrevNoLoop: function () {
-                var prev = this.prevNoLoop();
-                if ( prev ) prev.select();
+            selectPrevNoLoop: function ( options ) {
+                var prev = this.prevNoLoop( options );
+                if ( prev ) this.select( prev, options );
                 return this;
             },
-            ahead: function ( n ) {
-                if ( !this.selected ) throw new Error( "Illegal call of SelectableCollection navigation method. No model had been selected to begin with." );
-                return at_looped( this.indexOf( this.selected ) + n, this );
+            ahead: function ( n, options ) {
+                var label = options && options.label || this._pickyDefaultLabel;
+                if ( !this[label] ) throw new Error( 'Illegal call of SelectableCollection navigation method. No model had been selected to begin with (using label "' + label + '").' );
+                return at_looped( this.indexOf( this[label] ) + n, this );
             },
-            behind: function ( n ) {
-                return this.ahead( -n );
+            behind: function ( n, options ) {
+                return this.ahead( -n, options );
             },
-            next: function () {
-                return this.ahead( 1 );
+            next: function ( options ) {
+                return this.ahead( 1, options );
             },
-            prev: function () {
-                return this.behind( 1 );
+            prev: function ( options ) {
+                return this.behind( 1, options );
             },
-            aheadNoLoop: function ( n ) {
-                if ( !this.selected ) throw new Error( "Illegal call of SelectableCollection navigation method. No model had been selected to begin with." );
-                return at_noLoop( this.indexOf( this.selected ) + n, this );
+            aheadNoLoop: function ( n, options ) {
+                var label = options && options.label || this._pickyDefaultLabel;
+                if ( !this[label] ) throw new Error( 'Illegal call of SelectableCollection navigation method. No model had been selected to begin with (using label "' + label + '").' );
+                return at_noLoop( this.indexOf( this[label] ) + n, this );
             },
-            behindNoLoop: function ( n ) {
-                return this.aheadNoLoop( -n );
+            behindNoLoop: function ( n, options ) {
+                return this.aheadNoLoop( -n, options );
             },
-            nextNoLoop: function () {
-                return this.aheadNoLoop( 1 );
+            nextNoLoop: function ( options ) {
+                return this.aheadNoLoop( 1, options );
             },
-            prevNoLoop: function () {
-                return this.behindNoLoop( 1 );
+            prevNoLoop: function ( options ) {
+                return this.behindNoLoop( 1, options );
             },
 
             selectInitial: function () {
                 // A model gets passed in as first argument during an add event, but not during a reset, thus distinguishing
                 // the two.
-                var isReset = arguments.length && !( arguments[0] instanceof Backbone.Model ),
-                    autoSelectAt;
+                var autoSelectAt,
+                    isReset = arguments.length && !( arguments[0] instanceof Backbone.Model ),
+                    skipFlagPrefix = "_cycle_skipSelectInitial_";
 
-                if ( this.length && ! this.selected && ! this._cycle_skipSelectInitial && this.autoSelect !== "none" ) {
-                    autoSelectAt = getAutoSelectIndex( this.autoSelect, this.models );
+                _.each( this._cycleOpts.autoSelect, function ( autoSelectValue, label ) {
+                    var skipFlag = skipFlagPrefix + label;
 
-                    if ( !isReset ) {
+                    if ( this.length && !this[label] && !this[skipFlag] ) {
+                        autoSelectAt = getAutoSelectIndex( autoSelectValue, this.models );
 
-                        // Check if there is a selected model elsewhere in the collection - meaning that a batch of models
-                        // has been added and one of them had already been selected beforehand. The add events are now fired
-                        // one by one, and Backbone.Select will update the collection when the turn of the selected model
-                        // has come. Don't do an auto selection here, then. (And set a flag for the remaining add events, so
-                        // the expensive search for the selected model does not get repeated.)
+                        if ( !isReset ) {
 
-                        if ( this.find( function ( model ) { return model.selected; } ) ) this._cycle_skipSelectInitial = true;
+                            // Check if there is a selected model elsewhere in the collection - meaning that a batch of
+                            // models has been added and one of them had already been selected beforehand.
+                            //
+                            // (All models passed to .add() are added to the collection before the first `add` event is
+                            // fired. Ie, when the code here is running, this.models is already up to date.)
+                            //
+                            // The add events are now fired one by one, and the Backbone.Select mixin will update the
+                            // collection when the turn of the selected model has come. Don't do an auto selection here,
+                            // then.
+                            //
+                            // (And set a flag for the remaining add events, so the expensive search for the selected
+                            // model does not get repeated.)
+
+                            if ( this.find( function ( model ) { return model[label]; } ) ) this[skipFlag] = true;
+                        }
+
+                        if ( !this[skipFlag] && at_noLoop( autoSelectAt, this ) ) this.selectAt( autoSelectAt, { label: label } );
                     }
 
-                    if ( at_noLoop( autoSelectAt, this ) && !this._cycle_skipSelectInitial ) this.selectAt( autoSelectAt );
-                }
+                    // Delete the skip flag if necessary, once Backbone.Select has updated the selection
+                    if ( this[label] && this[skipFlag] ) delete this[skipFlag];
 
-                // Delete the skip flag if necessary, once Backbone.Select has updated the selection
-                if ( this.selected && this._cycle_skipSelectInitial ) delete this._cycle_skipSelectInitial;
+                }, this );
             },
 
             selectOnRemove: function ( model, collection, options ) {
-                var selectIndex, modelIndex;
+                var selectIndex, modelIndex,
+                    label = options && options.label || collection._pickyDefaultLabel,
+                    optionValue = this._cycleOpts.selectIfRemoved && this._cycleOpts.selectIfRemoved[label];
 
                 options || ( options = {} );
                 if ( options._externalEvent !== "remove" ) return;
-                if ( this.selectIfRemoved && this.selectIfRemoved === "none" || !this.length ) return;
+                if ( !optionValue || !this.length ) return;
 
                 modelIndex = options.index;
 
                 // NB The model is already deselected and removed from the collection (and collection.length is already
                 // adjusted).
-                selectIndex = this.selectIfRemoved.indexOf( "next" ) !== -1 ? modelIndex : modelIndex - 1;
-                if ( this.selectIfRemoved.indexOf( "NoLoop" ) !== -1 ) {
+                selectIndex = optionValue.indexOf( "next" ) !== -1 ? modelIndex : modelIndex - 1;
+                if ( optionValue.indexOf( "NoLoop" ) !== -1 ) {
+                    // Limit to available index range, without looping
                     selectIndex = Math.max( Math.min( selectIndex, this.length - 1 ), 0 );
                 }
 
-                at_looped( selectIndex, this ).select();
+                this.select( at_looped( selectIndex, this ), options );
             },
 
             _cycleType: "Backbone.Cycle.SelectableCollection"
@@ -196,10 +214,11 @@
              * (as the mixin name suggests). There is no need to apply Backbone.Select.Me separately.
              *
              * @param {Object} hostObject
+             * @param {Object} [options]   Backbone.Select.Me setup options
              */
-            applyTo: function ( hostObject ) {
+            applyTo: function ( hostObject, options ) {
                 // Apply the Backbone.Select.Me mixin
-                Backbone.Select.Me.applyTo( hostObject );
+                Backbone.Select.Me.applyTo( hostObject, options );
 
                 // Apply the Cycle.Model mixin and an identifier for Cycle.SelectableModel
                 _.extend( hostObject, CycleMixins.Model, { _cycleType: "Backbone.Cycle.SelectableModel" } );
@@ -220,13 +239,12 @@
              *
              * @param {Object}        hostObject
              * @param {Backbone.Cycle.SelectableModel[]} models           models passed to the collection constructor
-             * @param {Object}        [options]
+             * @param {Object}        [options]                           Backbone.Select.One options, and those listed below
              * @param {string|number} [options.autoSelect="none"]         which item to select when the collection is reset:
              *                                                            "first", "last", "none", item index
              * @param {string}        [options.selectIfRemoved="none"]    which item to select when the currently selected item
              *                                                            is removed: "prev", "next", "prevNoLoop", "nextNoLoop",
              *                                                            "none"
-             * @param {boolean}       [options.enableModelSharing=false]  enables model-sharing mode (see Backbone.Select)
              */
             applyTo: function ( hostObject, models, options ) {
 
@@ -240,35 +258,55 @@
 
                 // Transfer the options to the host object
                 // (NB initialSelection is an alias of autoSelect, but deprecated.)
-                hostObject.autoSelect = options.autoSelect || options.initialSelection || "none";
-                hostObject.selectIfRemoved  = options.selectIfRemoved || "none";
+                hostObject._cycleOpts = {};
+                hostObject._cycleOpts.autoSelect = options.autoSelect || options.initialSelection || "none";
+                hostObject._cycleOpts.selectIfRemoved  = options.selectIfRemoved || "none";
 
                 // Validate the option values
-                if ( ! _.contains( [ "first", "last", "none" ], hostObject.autoSelect ) && ! is_integer( hostObject.autoSelect ) ) throw new Error( 'Invalid autoSelect value "' + hostObject.autoSelect + '"' );
-                if ( ! _.contains( [ "prev", "next", "prevNoLoop", "nextNoLoop", "none" ], hostObject.selectIfRemoved ) ) throw new Error( 'Invalid selectIfRemoved value "' + hostObject.selectIfRemoved + '"' );
+                validateOptionValue( hostObject, "autoSelect", function ( value ) {
+                    return _.contains( [ "first", "last", "none" ], value ) || is_integer( value );
+                } );
 
-                enableInitialSelection = hostObject.autoSelect !== "none";
-                enableSelectIfRemoved = hostObject.selectIfRemoved !== "none";
+                validateOptionValue( hostObject, "selectIfRemoved", [ "prev", "next", "prevNoLoop", "nextNoLoop", "none" ] );
+
+                enableInitialSelection = isActiveOption( hostObject._cycleOpts.autoSelect );
+                enableSelectIfRemoved = isActiveOption( hostObject._cycleOpts.selectIfRemoved );
                 enableModelSharing = options.enableModelSharing || enableInitialSelection || enableSelectIfRemoved;
 
                 // Apply the Backbone.Select.One mixin
-                Backbone.Select.One.applyTo( hostObject, models, { enableModelSharing: enableModelSharing } );
+                Backbone.Select.One.applyTo( hostObject, models, _.extend( {}, options, { enableModelSharing: enableModelSharing } ) );
 
                 // Apply the Cycle.SelectableCollection mixin
                 _.extend( hostObject, CycleMixins.SelectableCollection );
+
+                // Convert string options into hash format (using the default label as key)
+                normalizeOption( hostObject, "autoSelect" );
+                normalizeOption( hostObject, "selectIfRemoved" );
+
+                // Check for conflicts with ignoreLabel
+                validateOptionLabelsNotIgnored( hostObject, "autoSelect" );
+                validateOptionLabelsNotIgnored( hostObject, "selectIfRemoved" );
 
                 // Make the options effective by setting up the corresponding event handlers, and the initial selection state
                 if ( enableSelectIfRemoved ) hostObject.listenTo( hostObject, "deselect:one", hostObject.selectOnRemove );
 
                 if ( enableInitialSelection ) {
 
-                    if ( !hostObject.selected && models && models.length ) {
+                    if ( models && models.length ) {
 
-                        autoSelectIndex = getAutoSelectIndex( hostObject.autoSelect, models );
-                        if ( models[autoSelectIndex] ) {
-                            hostObject.selected = models[autoSelectIndex];
-                            models[autoSelectIndex].select();
-                        }
+                        _.each( hostObject._cycleOpts.autoSelect, function ( autoSelectValue, label ) {
+
+                            if ( !hostObject[label] ) {
+
+                                autoSelectIndex = getAutoSelectIndex( autoSelectValue, models );
+                                if ( models[autoSelectIndex] ) {
+                                    hostObject[label] = models[autoSelectIndex];
+                                    models[autoSelectIndex].select( { label: label } );
+                                }
+
+                            }
+
+                        } );
 
                     }
 
@@ -303,6 +341,68 @@
 
     function getAutoSelectIndex ( autoSelectValue, models ) {
         return autoSelectValue === "first" ? 0 : ( autoSelectValue === "last" ? models.length - 1 : parseInt( autoSelectValue, 10 ) );
+    }
+
+    function validateOptionValue ( entity, optionName, test ) {
+        var option = entity._cycleOpts[optionName],
+            values = _.isObject( option ) ? _.values( option ) : [option],
+            isTestFunc = _.isFunction( test );
+
+        _.each( values, function ( value ) {
+            var errMsg,
+                passed = isTestFunc ? test( value ) : _.contains( test, value );
+
+            if ( !passed ) {
+                errMsg = optionName + ' option: Invalid value "' + value + '"';
+                if ( _.isObject( option ) ) errMsg += " inside hash";
+                throw new Error( errMsg );
+            }
+
+        } );
+    }
+
+    function validateOptionLabelsNotIgnored ( entity, optionName ) {
+        var option = entity._cycleOpts[optionName],
+            labels = _.keys( option ),
+            conflicts = _.intersection( entity._pickyIgnoredLabels, labels );
+
+        if ( conflicts.length ) {
+            conflicts = _.map( conflicts, function ( label ) { return '"' + label + '"'; } );
+            throw new Error( "Conflicting options: Can't define " + optionName + ' behaviour for label ' + conflicts.join( ", " ) + ' because it is ignored in the collection.' );
+        }
+    }
+
+    function isActiveOption ( option ) {
+        var cbIsActive = function ( value ) {
+            return value !== "none";
+        };
+
+        return ( _.isObject( option ) ) ? _.some( option, cbIsActive ) : cbIsActive( option );
+    }
+
+    /**
+     * Normalizes the option:
+     *
+     * - Makes sure plain string values are turned into a hash (using the default label of the entity as key)
+     * - Creates an independent copy of hash inputs (so that changes don't appear in the input hash
+     * - Makes sure "none" values (redundant) are removed
+     *
+     * @param {Object} entity      the host object
+     * @param {string} optionName  "autoSelect" or "selectIfRemoved"
+     */
+    function normalizeOption ( entity, optionName ) {
+        var hash = {},
+            value = entity._cycleOpts[optionName];
+
+        if ( !_.isObject( value )  ) {
+            if ( value && value !== "none" ) hash[entity._pickyDefaultLabel] = value;
+        } else {
+            _.each( value, function ( value, key ) {
+                if ( value && value !== "none" ) hash[key] = value;
+            } );
+        }
+
+        entity._cycleOpts[optionName] = hash;
     }
 
 }( Backbone, _ ));
