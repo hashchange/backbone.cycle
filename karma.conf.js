@@ -36,7 +36,7 @@ module.exports = function(config) {
       'spec/helpers/**/*.js',
 
       // Tests
-      'spec/**/*.+(spec|test).js'
+      'spec/**/*.+(spec|test|tests).js'
     ],
 
 
@@ -47,8 +47,8 @@ module.exports = function(config) {
 
 
     // test results reporter to use
-    // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-    reporters: ['mocha'],
+    // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage', 'mocha'
+    reporters: ['progress'],
 
 
     // web server port
@@ -72,10 +72,11 @@ module.exports = function(config) {
     // - Chrome
     // - ChromeCanary
     // - Firefox
-    // - Opera (has to be installed with `npm install karma-opera-launcher`)
-    // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
+    // - Opera
+    // - Safari
     // - PhantomJS
-    // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
+    // - SlimerJS
+    // - IE (Windows only)
     //
     // ATTN Interactive debugging in PhpStorm/WebStorm doesn't work with PhantomJS. Use Firefox or Chrome instead.
     browsers: ['PhantomJS'],
