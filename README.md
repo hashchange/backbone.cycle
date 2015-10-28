@@ -1,8 +1,8 @@
 # Backbone.Cycle
 
-<small>[Example][intro-example] – [Setup][setup] – [Basic navigation][basic-navigation] – [Navigating with selections][selection-navigation] – [Behaviours][setup-options] – [Caveats][options-caveats] – [Build and test][build]</small>
+<small>[Example][intro-example] – [Setup][setup] – [Basic navigation][Cycle.SelectableModel-methods] – [Navigating with selections][Cycle.SelectableCollection-methods] – [Behaviours][setup-options] – [Caveats][options-caveats] – [Build and test][build]</small>
 
-Backbone.Cycle is a set of mixins for [Backbone][] models and collections. Models gain the ability to be selected, and collections handle those selections. Methods for navigating a collection are also part of the package, such as [`model.ahead(3)`][Cycle.SelectableCollection-looping-navigation-methods], [`collection.selectNext()`][Cycle.SelectableCollection-selection-methods], [`collection.prev()`][Cycle.SelectableCollection-looping-navigation-methods], [`collection.prevNoLoop()`][Cycle.SelectableCollection-nonlooping-navigation-methods].
+Backbone.Cycle is a set of mixins for [Backbone][] models and collections. Models gain the ability to be selected, and collections handle those selections. Methods for navigating a collection are also part of the package, such as [`model.ahead(3)`][Cycle.SelectableModel-looping-navigation-methods], [`collection.selectNext()`][Cycle.SelectableCollection-selection-methods], [`collection.prev()`][Cycle.SelectableCollection-looping-navigation-methods], [`collection.prevNoLoop()`][Cycle.SelectableCollection-nonlooping-navigation-methods].
 
 With Backbone.Cycle options, you enable predefined, common [behaviours][setup-options], like always selecting the first item [in a new collection][autoselect-option], or selecting the previous model when a selected model [is removed][selectifremoved-option]. Models can be [shared][enablemodelsharing-option] across multiple collections, and selections are synced among them.
 
@@ -81,22 +81,30 @@ The stable version of Backbone.Cycle is available in the `dist` directory ([dev]
 
 There are three components in this package:
 
-- Backbone.Cycle.Model just offers basic navigation features
-- Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection, used in tandem, provide the full feature set.
+- [Backbone.Cycle.SelectableModel][Cycle.SelectableModel-methods] and [Backbone.Cycle.SelectableCollection][Cycle.SelectableCollection-methods] are used together. They provide the full feature set.
+- [Backbone.Cycle.Model][lightweight-mixin] just offers basic navigation features, and does not support making selections.
 
-## Basic navigation: Backbone.Cycle.Model
+## Full-featured mixins
 
-The basic navigation methods are provided by Backbone.Cycle.Model. The component doesn't include the ability to select items.
+[Backbone.Cycle.SelectableModel][Cycle.SelectableModel-methods] and [Backbone.Cycle.SelectableCollection][Cycle.SelectableCollection-methods] provide you with methods for navigation, and for selecting items. The collection also gives you [options for automatic selections][setup-options]. 
 
-### Methods of Backbone.Cycle.Model
+Both components must be used together. **You must apply the model mixin, Backbone.Cycle.SelectableModel, to all models in a Backbone.Cycle.SelectableCollection.**
 
-There are two kinds of methods in Backbone.Cycle.Model.
+### Inheriting from Backbone.Select
+
+Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection inherit the features of [Backbone.Select][]. A SelectableCollection allows one model to be selected at a time; it is derived from [Backbone.Select.One][]. 
+
+As a result, you can `select()` models, retrieve the `selected` model from a collection, listen to `reselect:one` or `deselected` events, implement an `onSelect` event handler etc. See the [Backbone.Select documentation][Backbone.Select] for more on selection-related methods, properties and events.
+
+### Model methods
+
+Backbone.Cycle.SelectableModel adds two kinds of navigation methods to a Backbone model.
 
 #### Looping navigation methods 
   
   `model.next()`, `model.prev()`, `model.ahead(n)`, `model.behind(n)`. 
 
-They return the next or previous model in the collection, relative to the model the method is called on. `ahead` and `behind` return a model which is _n_ items ahead or back. Once the final item of the collection is reached, the methods loop and continue from the first item, or from the last item when moving in the opposite direction.
+Looping navigation methods return the next or previous model in the collection, relative to the model the method is called on. `ahead` and `behind` return a model which is _n_ items ahead or back. Once the final item of the collection is reached, the methods loop and continue from the first item, or from the last item when moving in the opposite direction.
 
 #### Non-looping navigation methods 
   
@@ -104,42 +112,20 @@ They return the next or previous model in the collection, relative to the model 
 
 When you try to access a model beyond the boundaries of the collection, these methods return `undefined`.
 
-#### Collection context
+#### Collection context in a model
   
 Navigation always happens in the context of a collection. That collection is referenced in the [`collection` property][backbone-model-initialize] of the model. If a model is part of more than one collection, `model.collection` refers to the one the model was added to first.
 
 You can override the collection context, though. Just pass a collection as an argument to any of the above methods. For instance, `model.ahead(5, otherCollection)` returns the model which is five items ahead of `model` in `otherCollection`. Likewise, you'd call `next` with a collection context as `model.next(otherCollection)`. 
 
-### Applying the mixin
-
-Backbone.Cycle.Model is applied to a model in `initialize`:
-
-```javascript
-var Model = Backbone.Model.extend( {
-    initialize: function () {
-        Backbone.Cycle.Model.applyTo( this );
-    }
-} );
-```
-
-###### Signature, options
-
-The Backbone.Cycle.Model `applyTo()` signature is: 
-
-```js
-Backbone.Cycle.Model.applyTo( thisModel );
-```
-
-The method does not accept an options argument.
-
-### Usage examples for Backbone.Cycle.Model
+#### Usage examples for Backbone.Cycle.SelectableModel
 
 The basic usage, plain and simple:
 
 ```javascript
 var Model = Backbone.Model.extend( {
-    initialize: function () {
-        Backbone.Cycle.Model.applyTo( this );
+    initialize: function ( attributes, options ) {
+        Backbone.Cycle.SelectableModel.applyTo( this, options );
     }
 } );
 
@@ -153,7 +139,7 @@ console.log( m2.next().id );           // prints "m3"
 console.log( m1.ahead( 2 ).id );       // prints "m3"
 ```
 
-If you share models among multiple collections:
+If you share models among multiple collections, [specify the collection][Cycle.SelectableModel-collection-context]:
 
 ```javascript
 // Model order is reversed in otherCollection
@@ -163,25 +149,11 @@ console.log( m2.next( otherCollection ).id );     // prints "m1"
 console.log( m3.ahead( 2, otherCollection ).id ); // prints "m1"
 ```
 
-## Navigating with selections: Backbone.Cycle.SelectableModel, Backbone.Cycle.SelectableCollection
-
-[Backbone.Cycle.SelectableCollection][Cycle.SelectableCollection-methods], used in conjunction with [Backbone.Cycle.SelectableModel][Cycle.SelectableModel-methods], provides additional methods for navigation, and for selecting items. It also gives you [options for automatic selections][setup-options]. 
-
-Both components must be used in tandem. **The models in a Backbone.Cycle.SelectableCollection must have the Backbone.Cycle.SelectableModel mixin applied.** Merely mixing in [Backbone.Cycle.Model][basic-navigation] is not enough.
-
-### Inheriting from Backbone.Select
-
-Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection inherit the features of [Backbone.Select][]. A SelectableCollection allows one model to be selected at a time; it is derived from Backbone.Select.One. 
-
-As a result, you can `select()` models, retrieve the `selected` model from a collection, listen to `reselect:one` or `deselected` events, implement an `onSelect` event handler etc. See the [Backbone.Select documentation][Backbone.Select] for more on selection-related methods, properties and events.
-
-### Model methods 
-
-Beyond the Backbone.Select features, a SelectableModel exposes the same methods as a basic Backbone.Cycle.Model. Call `next()`, `ahead(n)` etc as [described above][Cycle.Model-methods].
-
 ### Collection methods
 
-A SelectableCollection has methods matching those a SelectableModel.
+The methods of a SelectableCollection match those [of a SelectableModel][Cycle.SelectableModel-methods].
+
+There is a difference, though. In a collection, navigation happens relative to the selected model. By contrast, navigation methods called on a model are relative to that model. A selection doesn't matter in that context. 
 
 #### Looping navigation methods
   
@@ -286,11 +258,11 @@ You can pass an options hash as the third parameter to `.applyTo()`. Backbone.Cy
 
 Even though Backbone.Cycle depends on [Backbone.Select][], there is no need to apply the Backbone.Select mixins in `initialize`. The Backbone.Cycle mixins do that themselves, behind the scenes.
 
-Backbone.Cycle.SelectableCollection allows only one selected item at a time. It is based on Backbone.Select.One. Its features make less sense if there are multiple selected items in a collection, so there is no corresponding component for Backbone.Select.Many in Backbone.Cycle.
+Backbone.Cycle.SelectableCollection allows only one selected item at a time. It is based on [Backbone.Select.One][]. Its features make less sense if there are multiple selected items in a collection, so there is no corresponding component for [Backbone.Select.Many][] in Backbone.Cycle.
 
 ### Setup options for a SelectableCollection
 
-When a SelectableCollection mixin is created with `applyTo`, you can pass an options object to it. Options define the behaviour when models are passed to a collection, removed from it, or when models are shared among multiple collections.
+When a SelectableCollection mixin is [created with `applyTo`][applying-full-featured-mixins], you can pass an options object to it. Options define the behaviour when models are passed to a collection, removed from it, or when models are shared among multiple collections.
 
 #### What they are, what they do
 
@@ -410,11 +382,47 @@ If you are not actually sharing models among collections, you can get away with 
 - `add`:
   Silencing `add` is safe. If you are using `add` to pass the initial set of models to the collection, the `silent` option suppresses the automatic selection (ie, no `autoSelect`).
 
-Confused? Fair enough. Don't use `silent` then ;).
+Confused? Fair enough. Don't use `silent` for `add`, `remove` or `reset`, then ;).
 
 ### Usage examples for Backbone.Cycle.SelectableCollection
 
 Check out the [introductory example][intro-example].
+
+## Backbone.Cycle.Model: A lightweight alternative for basic navigation
+
+If you don't need to make selections, and you don't use Backbone.Cycle.SelectableCollection, you can keep things simple with a stripped-down model mixin. Backbone.Cycle.Model provides navigation methods, and there it ends.
+
+### Methods of Backbone.Cycle.Model
+
+Backbone.Cycle.Model exposes the same navigation methods as Backbone.Cycle.SelectableModel. Call `next()`, `ahead(n)` etc as [described above][Cycle.SelectableModel-methods].
+
+Backbone.Cycle.Model does not inherit [Backbone.Select][] functionality, though, and does not support making selections. Do not use it in collections which have the [SelectableCollection mixin][full-featured-mixins] applied.
+
+### Applying the mixin
+
+Backbone.Cycle.Model is applied to a model in `initialize`:
+
+```javascript
+var Model = Backbone.Model.extend( {
+    initialize: function () {
+        Backbone.Cycle.Model.applyTo( this );
+    }
+} );
+```
+
+###### Signature, options
+
+The Backbone.Cycle.Model `applyTo()` signature is: 
+
+```js
+Backbone.Cycle.Model.applyTo( thisModel );
+```
+
+The method does not accept an options argument.
+
+### Usage examples for Backbone.Cycle.Model
+
+See the [examples for Backbone.Cycle.SelectableModel][Cycle.SelectableModel-usage].
 
 ## Build process and tests
 
@@ -460,13 +468,15 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
-## Donations
+## Facilitating development
 
 To my own surprise, [a kind soul][donations-idea] wanted to donate to one of my projects, but there hadn't been a link. [Now there is.][donations-paypal-link]
 
-Please don't feel obliged in the slightest. It's [MIT][license], and so it's free. That said, if you do want to support the maintenance and development of this component, or any of my [other open-source projects][hashchange-projects-overview], I _am_ thankful for your contribution.
+Please don't feel obliged in the slightest. The license here is [MIT][license], and so it's free. That said, if you do want to support the maintenance and development of this component, or any of my [other open-source projects][hashchange-projects-overview], I _am_ thankful for your contribution.
 
-Naturally, these things don't pay for themselves – not even remotely. The components I write aim to be well tested, performant, and reliable. That may not sound terribly fascinating, but at the end of the day, these attributes make all the difference in production. And maintaining that standard is rather costly, time-wise. That's why donations are welcome, no matter how small, and be it as nod of appreciation to keep spirits up. [Thank you!][donations-paypal-link]
+Naturally, these things don't pay for themselves – not even remotely. The components I write aim to be well tested, performant, and reliable. These qualities may not seem particularly fascinating, but I put a lot of emphasis on them because they make all the difference in production. They are also rather costly to maintain, time-wise.
+
+That's why donations are welcome, and be it as nod of appreciation to keep spirits up. [Thank you!][donations-paypal-link]
 
 [![Donate with Paypal][donations-paypal-button]][donations-paypal-link]
 
@@ -552,35 +562,47 @@ Copyright (c) 2014, 2015 Michael Heim.
 [Backbone.Select-intro-example]: https://github.com/hashchange/backbone.select#an-introductory-example "Backbone.Select: An introductory example"
 [Backbone.Select-demos]: https://github.com/hashchange/backbone.select#demos "Backbone.Select: Demos"
 [Backbone.Select.Me-applyTo]: https://github.com/hashchange/backbone.select#signature-options "Backbone.Select.Me: `applyTo` signature and options"
+[Backbone.Select.One]: https://github.com/hashchange/backbone.select#backboneselectone-a-single-select-collection "Backbone.Select.One: a single-select collection"
 [Backbone.Select.One-applyTo]: https://github.com/hashchange/backbone.select#signature-options-1 "Backbone.Select.One: `applyTo` signature and options"
 [Backbone.Select-select.one-silent]: https://github.com/hashchange/backbone.select#silent-option-1 "Backbone.Select: Select.One silent option"
+[Backbone.Select.Many]: https://github.com/hashchange/backbone.select#backboneselectmany-a-multi-select-collection "Backbone.Select.Many: a multi-select collection"
 [Backbone.Select-custom-labels]: https://github.com/hashchange/backbone.select#custom-labels "Backbone.Select: Custom labels"
 [Backbone.Select-default-label]: https://github.com/hashchange/backbone.select#the-defaultlabel-setup-option "Backbone.Select: The `defaultLabel` setup option"
 [Backbone.Select-model-sharing]: https://github.com/hashchange/backbone.select#sharing-models-among-collections "Backbone.Select: Sharing models among collections"
 
 [intro-example]: #the-gist-of-it "The gist of it"
 [setup]: #dependencies-and-setup "Dependencies and setup"
-[basic-navigation]: #basic-navigation-backbonecyclemodel "Basic navigation: Backbone.Cycle.Model"
-[Cycle.Model-methods]: #methods-of-backbonecyclemodel
-[Cycle.Model-looping-navigation-methods]: #looping-navigation-methods "Backbone.Cycle.Model: Looping navigation methods"
-[Cycle.SelectableModel-methods]: #model-methods "Backbone.Cycle.SelectableModel methods"
-[Cycle.SelectableCollection-methods]: #collection-methods "Backbone.Cycle.SelectableCollection methods"
-[selection-navigation]: #navigating-with-selections-backbonecycleselectablemodel-backbonecycleselectablecollection "Navigating with selections: Backbone.Cycle.SelectableModel, Backbone.Cycle.SelectableCollection"
+
+[full-featured-mixins]: #fullfeatured-mixins "Full-featured mixins: Backbone.Cycle.SelectableModel and Backbone.Cycle.SelectableCollection"
+ 
+[Cycle.SelectableModel-methods]: #model-methods "Methods of Backbone.Cycle.SelectableModel"
+[Cycle.SelectableModel-looping-navigation-methods]: #looping-navigation-methods "Backbone.Cycle.SelectableModel: Looping navigation methods"
+[Cycle.SelectableModel-nonlooping-navigation-methods]: #nonlooping-navigation-methods "Backbone.Cycle.SelectableModel: Non-looping navigation methods"
+[Cycle.SelectableModel-collection-context]: #collection-context-in-a-model "Collection context in a model"
+[Cycle.SelectableModel-usage]: #usage-examples-for-backbonecycleselectablemodel "Usage examples for Backbone.Cycle.SelectableModel"
+
+[Cycle.SelectableCollection-methods]: #collection-methods "Methods of Backbone.Cycle.SelectableCollection"
 [Cycle.SelectableCollection-looping-navigation-methods]: #looping-navigation-methods-1 "Backbone.Cycle.SelectableCollection: Looping navigation methods"
 [Cycle.SelectableCollection-nonlooping-navigation-methods]: #nonlooping-navigation-methods-1 "Backbone.Cycle.SelectableCollection: Non-looping navigation methods"
 [Cycle.SelectableCollection-selection-methods]: #looping-and-nonlooping-selection-methods "Backbone.Cycle.SelectableCollection: Looping and non-looping selection methods"
+[applying-full-featured-mixins]: #applying-the-mixins "Applying the mixins"
+
 [setup-options]: #setup-options-for-a-selectablecollection "Setup options for a SelectableCollection"
 [autoselect-option]: #autoselect-option "`autoSelect` option"
 [choosing-label]: #choosing-a-label "Choosing a label"
 [selectifremoved-option]: #selectifremoved-option "`selectIfRemoved` option"
 [enablemodelsharing-option]: #enablemodelsharing-option "`enableModelSharing` option"
 [options-caveats]: #restrictions-and-caveats-when-using-setup-options
+
+[lightweight-mixin]: #backbonecyclemodel-a-lightweight-alternative-for-basic-navigation "Backbone.Cycle.Model: A lightweight alternative for basic navigation"
+[Cycle.Model-methods]: #methods-of-backbonecyclemodel "Methods of Backbone.Cycle.Model"
+
 [build]: #build-process-and-tests "Build process and tests"
 
 [demo-jsbin]: http://jsbin.com/johoha/2/edit?js,output "Backbone.Cycle: Demo (AMD) – JSBin"
 [demo-codepen]: http://codepen.io/hashchange/pen/OVeovy "Backbone.Cycle: Demo (AMD) – Codepen"
 
-[donations]: #donations "Donations"
+[donations]: #facilitating-development "Facilitating development"
 [donations-idea]: https://github.com/hashchange/jquery.documentsize/issues/1 "jQuery.documentSize, issue #1: Thank you!"
 [donations-paypal-link]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PSL6T25YM7HLS "Donate with Paypal"
 [donations-paypal-button]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif "Donate with Paypal"
