@@ -484,6 +484,10 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release notes
 
+### v2.1.1
+
+* Made methods chainable which select a model
+ 
 ### v2.1.0
 
 * Added `label` support

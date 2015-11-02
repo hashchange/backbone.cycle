@@ -1,5 +1,5 @@
-// Backbone.Cycle, v2.1.0
-// Copyright (c)2015 Michael Heim, Zeilenwechsel.de
+// Backbone.Cycle, v2.1.1
+// Copyright (c) 2014-2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle
 
@@ -88,6 +88,7 @@
                     } else {
                         throw new Error( "Model with index " + index + " doesn't exist in the collection and can't be selected." );
                     }
+                    return this;
                 },
     
                 selectNext: function ( options ) {
