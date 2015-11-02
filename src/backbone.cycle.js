@@ -60,6 +60,7 @@
                 } else {
                     throw new Error( "Model with index " + index + " doesn't exist in the collection and can't be selected." );
                 }
+                return this;
             },
 
             selectNext: function ( options ) {

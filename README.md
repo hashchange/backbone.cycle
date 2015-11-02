@@ -88,7 +88,7 @@ There are three components in this package:
 
 [Backbone.Cycle.SelectableModel][Cycle.SelectableModel-methods] and [Backbone.Cycle.SelectableCollection][Cycle.SelectableCollection-methods] provide you with methods for navigation, and for selecting items. The collection also gives you [options for automatic selections][setup-options]. 
 
-Both components must be used together. **You must apply the model mixin, Backbone.Cycle.SelectableModel, to all models in a Backbone.Cycle.SelectableCollection.**
+Both components must be used together. _You must apply the model mixin, Backbone.Cycle.SelectableModel, to all models in a Backbone.Cycle.SelectableCollection._
 
 ### Inheriting from Backbone.Select
 
@@ -183,7 +183,7 @@ The non-looping navigation methods support the following option: [`label`][choos
 
 `collection.selectNextNoLoop( [options] )`, `collection.selectPrevNoLoop( [options] )`. 
 
-Instead of returning the model, these methods select it. 
+Instead of returning the model, these methods select it. (They return the collection, and thus allow chaining.)
 
 Looping methods always succeed. By contrast, if you call a non-looping, `select*NoLoop` method to select a model beyond the boundaries of the collection, the method is a no-op, and the selection remains unchanged.
 
@@ -194,6 +194,8 @@ The selection methods support the following options: [`silent`][Backbone.Select-
 `selectAt(n)`. 
 
 An unrelated convenience method, selects the model at index _n_.
+
+The method returns the collection, and allows chaining.
 
 #### Collection methods require selection
 

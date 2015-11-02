@@ -223,6 +223,16 @@
                 expect( function () { collection.selectNext() ; } ).to.throw( collectionErrorMessage );
             } );
 
+            it( 'returns the collection if the next model exists', function () {
+                m1.select();
+                expect( collection.selectNext() ).to.equal( collection );
+            } );
+
+            it( 'returns the collection if there is no next model', function () {
+                m3.select();
+                expect( collection.selectNext() ).to.equal( collection );
+            } );
+
         } );
 
         describe( 'Calling selectPrev() on a collection', function () {
@@ -241,6 +251,16 @@
 
             it( 'throws an error if no model is selected', function () {
                 expect( function () { collection.selectPrev() ; } ).to.throw( collectionErrorMessage );
+            } );
+
+            it( 'returns the collection if the previous model exists', function () {
+                m3.select();
+                expect( collection.selectPrev() ).to.equal( collection );
+            } );
+
+            it( 'returns the collection if there is no previous model', function () {
+                m1.select();
+                expect( collection.selectPrev() ).to.equal( collection );
             } );
 
         } );
@@ -263,6 +283,16 @@
                 expect( function () { collection.selectNextNoLoop() ; } ).to.throw( collectionErrorMessage );
             } );
 
+            it( 'returns the collection if the next model exists', function () {
+                m1.select();
+                expect( collection.selectNextNoLoop() ).to.equal( collection );
+            } );
+
+            it( 'returns the collection if there is no next model', function () {
+                m3.select();
+                expect( collection.selectNextNoLoop() ).to.equal( collection );
+            } );
+
         } );
 
         describe( 'Calling selectPrevNoLoop() on a collection', function () {
@@ -283,6 +313,16 @@
                 expect( function () { collection.prevNoLoop() ; } ).to.throw( collectionErrorMessage );
             } );
 
+            it( 'returns the collection if the previous model exists', function () {
+                m3.select();
+                expect( collection.selectPrevNoLoop() ).to.equal( collection );
+            } );
+
+            it( 'returns the collection if there is no previous model', function () {
+                m1.select();
+                expect( collection.selectPrevNoLoop() ).to.equal( collection );
+            } );
+
         } );
 
         describe( 'Calling selectAt() on a collection', function () {
@@ -298,6 +338,10 @@
 
             it( 'throws an error if the index is negative', function () {
                 expect( function () { collection.selectAt( -1 ) ; } ).to.throw( "Model with index -1 doesn't exist in the collection and can't be selected." );
+            } );
+
+            it( 'returns the collection', function () {
+                expect( collection.selectAt(1) ).to.equal( collection );
             } );
 
         } );
@@ -322,6 +366,7 @@
             } );
 
         } );
+
     } );
 
 })();
