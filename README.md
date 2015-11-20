@@ -498,6 +498,10 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release notes
 
+### v2.1.2
+
+* Fixed `select:one` event being fired by `autoSelect` during a reset, is silent now
+
 ### v2.1.1
 
 * Made methods chainable which select a model
@@ -506,11 +510,11 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 * Added `label` support
 
-### v.2.0.1
+### v2.0.1
 
 * Fixed compatibility with Backbone 1.2.x
 
-### v.2.0.0
+### v2.0.0
 
 * Added an `applyTo` setup method for Backbone.Cycle.Model, protecting the mixin from unintentional modification. The setup method _must_ be used – applying the mixin just by extending the host model no longer works.
 * Fixed compatibility with Underscore 1.7.0
@@ -546,11 +550,11 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 * Fixed bower.json ignore list
 * Fixed typos in readme
 
-### v.1.0.1
+### v1.0.1
 
 * Added documentation
 
-### v.1.0.0
+### v1.0.0
 
 * Initial version
 

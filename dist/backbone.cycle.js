@@ -1,4 +1,4 @@
-// Backbone.Cycle, v2.1.1
+// Backbone.Cycle, v2.1.2
 // Copyright (c) 2014-2015 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle
@@ -123,7 +123,8 @@
                     skipFlagPrefix = "_cycle_skipSelectInitial_";
 
                 _.each( this._cycleOpts.autoSelect, function ( autoSelectValue, label ) {
-                    var skipFlag = skipFlagPrefix + label;
+                    var selectOptions,
+                        skipFlag = skipFlagPrefix + label;
 
                     if ( this.length && !this[label] && !this[skipFlag] ) {
                         autoSelectAt = getAutoSelectIndex( autoSelectValue, this.models );
@@ -146,7 +147,21 @@
                             if ( this.find( function ( model ) { return model[label]; } ) ) this[skipFlag] = true;
                         }
 
-                        if ( !this[skipFlag] && at_noLoop( autoSelectAt, this ) ) this.selectAt( autoSelectAt, { label: label } );
+
+                        if ( !this[skipFlag] && at_noLoop( autoSelectAt, this ) ) {
+
+                            // During a reset, the select:one event has to be silenced, but only for the collection
+                            // being reset. Events on the model, and in other collections sharing the model, must fire
+                            // as usual.
+                            //
+                            // That can be achieved with the _silentLocally flag. It is undocumented and internal to
+                            // Backbone.Select, but does exactly that. It acts as `silent: true` only for the initial
+                            // select() call, without silencing secondary ones.
+
+                            selectOptions = isReset ? { label: label, _silentLocally: true } : { label: label };
+                            this.selectAt( autoSelectAt, selectOptions );
+
+                        }
                     }
 
                     // Delete the skip flag if necessary, once Backbone.Select has updated the selection
