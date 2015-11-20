@@ -282,6 +282,14 @@ The `autoSelect` setting kicks in when the initial set of models is passed to a 
 
 It's important to note that `autoSelect` will _only_ spring into action during instantiation, with an `add`, or with a `reset`. It won't guarantee that there is a selected item all the time. If you deselect manually, nothing will happen unless you `add` or `reset` later on.
 
+###### Events
+
+If `autoSelect` causes a selection while the collection is instantiated, or when models are passed to `add`, all selection-related events fire as usual.
+
+During a `reset`, however, `select:one` and `deselect:one` events are silenced in the collection which is being reset. This is [standard behaviour in Backbone.Select][Backbone.Select-events-model-sharing]. It also applies to selections caused by `autoSelect`.
+
+The silencing effect is strictly limited to the collection being reset, though. The `selected` and `deselected` events on a model _are_ triggered even during a `reset`. So are `select:*` and `deselect:one` events in other collections sharing the models. Again, this is how things always work [in Backbone.Select][Backbone.Select-events-model-sharing].
+
 ###### Labels
 
 When you set `autoSelect` to a string, the option only affects the default [label][Backbone.Select-custom-labels] of the collection ([usually `"selected"`][Backbone.Select-default-label]). Other, secondary labels are not treated to auto selection magic then.
@@ -309,6 +317,12 @@ The `autoSelect` option is off by default, with value `autoSelect: "none"`.
 Choices: `"prev"`, `"next"`, `"prevNoLoop"`, `"nextNoLoop"`, `"none"` (default).
 
 Use `selectIfRemoved` if you want to select another model when the selected model is removed from the collection. The option value determines which model gets selected: `"prev"`, `"next"`, `"prevNoLoop"`, `"nextNoLoop"`. 
+
+###### Triggers and events
+
+The `selectIfRemoved` setting responds to a `remove()` call on the collection. It does not respond to `reset()`. And obviously, if a model is shared with other collections, removing it from those other collections doesn't somehow trigger the local `selectIfRemoved` behaviour.
+
+If the behaviour causes to a model to be selected, all selection-related events fire as usual. 
 
 ###### Labels
 
@@ -575,6 +589,7 @@ Copyright (c) 2014, 2015 Michael Heim.
 [Backbone.Select-custom-labels]: https://github.com/hashchange/backbone.select#custom-labels "Backbone.Select: Custom labels"
 [Backbone.Select-default-label]: https://github.com/hashchange/backbone.select#the-defaultlabel-setup-option "Backbone.Select: The `defaultLabel` setup option"
 [Backbone.Select-model-sharing]: https://github.com/hashchange/backbone.select#sharing-models-among-collections "Backbone.Select: Sharing models among collections"
+[Backbone.Select-events-model-sharing]: https://github.com/hashchange/backbone.select#events "Backbone.Select: Sharing models among collections – Events"
 
 [intro-example]: #the-gist-of-it "The gist of it"
 [setup]: #dependencies-and-setup "Dependencies and setup"
