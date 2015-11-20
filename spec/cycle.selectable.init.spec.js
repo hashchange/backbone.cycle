@@ -281,8 +281,8 @@
                         expect( events.get( m1, "selected" ) ).to.have.been.calledWith( m1, { label: "selected" } );
                     } );
 
-                    it( 'a select:one event is triggered on the collection', function () {
-                        expect( events.get( collection, "select:one" ) ).to.have.been.calledWith( m1, collection, { label: "selected" } );
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
                     } );
 
                 } );
@@ -661,8 +661,8 @@
                         expect( events.get( m3, "selected" ) ).to.have.been.calledWith( m3, { label: "selected" } );
                     } );
 
-                    it( 'a select:one event is triggered on the collection', function () {
-                        expect( events.get( collection, "select:one" ) ).to.have.been.calledWith( m3, collection, { label: "selected" } );
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
                     } );
 
                 } );
@@ -1051,8 +1051,8 @@
                             expect( events.get( m2, "selected" ) ).to.have.been.calledWith( m2, { label: "selected" } );
                         } );
 
-                        it( 'a select:one event is triggered on the collection', function () {
-                            expect( events.get( collection, "select:one" ) ).to.have.been.calledWith( m2, collection, { label: "selected" } );
+                        it( 'no select:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
                         } );
 
                     } );
@@ -1754,16 +1754,16 @@
                         expect( events.get( m3, "selected:selected" ) ).not.to.have.been.called;
                     } );
 
-                    it( 'a select:one event with label "starred" is triggered on the collection', function () {
-                        expect( events.get( collection, "select:one" ) ).to.have.been.calledWith( m1, collection, { label: "starred" } );
+                    it( 'no select:one event with label "starred" is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one:starred" ) ).not.to.have.been.called;
                     } );
 
-                    it( 'a select:one event with label "picked" is triggered on the collection', function () {
-                        expect( events.get( collection, "select:one" ) ).to.have.been.calledWith( m3, collection, { label: "picked" } );
+                    it( 'no select:one event with label "picked" is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one:picked" ) ).not.to.have.been.called;
                     } );
 
                     it( 'no other select:one events than these two are triggered on the collection', function () {
-                        expect( events.get( collection, "select:one" ) ).to.have.been.calledTwice;
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
                     } );
 
                 } );
