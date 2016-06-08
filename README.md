@@ -498,6 +498,10 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release notes
 
+### v2.1.3
+
+* Updated bower.json, package.json for Backbone 1.3.x
+
 ### v2.1.2
 
 * Fixed `select:one` event being fired by `autoSelect` during a reset, is silent now
