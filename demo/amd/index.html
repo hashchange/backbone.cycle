@@ -3,14 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
-    <title>AMD setup - Demo and Playground</title>
+    <title>Backbone.Cycle: Demo (AMD)</title>
 
     <!-- ATTN Foundation loaded without JS - stay clear of JS-driven widgets, or add the JS setup -->
     <link rel="stylesheet" href="../bower_demo_components/foundation/css/normalize.css">
     <link rel="stylesheet" href="../bower_demo_components/foundation/css/foundation.css">
 
+    <link rel="stylesheet" href="../common.css">
     <link rel="stylesheet" href="amd.css">
 </head>
 <body>
@@ -19,9 +20,16 @@
 
     <!-- body content here... -->
     <section id="header">
-        <h1 class="row">AMD setup</h1>
-        <p class="row">This page uses the AMD build in the <code>dist</code> directory, not the files in <code>src</code>. In other words, run the <code>grunt</code> command first to build a current version.</p>
+        <h1 class="row">Backbone.Cycle</h1>
+        <h2 class="row">Demo (AMD)</h2>
+
+        <p id="build-info" class="row">
+            <a href="#" id="close-build-info">×</a>
+            This page uses the AMD build in the <code>dist</code> directory, not the files in
+            <code>src</code>. In other words, run the <code>grunt</code> command first to build a current version.
+        </p>
     </section>
+
     <section>
 
         <div class="row">
@@ -51,11 +59,32 @@
     
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
     <script src="../bower_demo_components/requirejs/require.js"></script>
+
+    <!-- Runtime async script loading -->
     <script src="require-config.js"></script>
     <script>
-        // Relative to the baseUrl defined in require-config.js
-        require( ['../demo/amd/amd'] );
+        // Main file, set to the name of the main module. The name is defined in the paths config, in require-config.js.
+        // If a path were used here, it would be relative to the baseUrl defined in require-config.js (which is set to
+        // project root):
+        // require( ['demo/amd/main'] );
+        require( ['local.main'] );
     </script>
 
+    <!--
+        For testing the output of r.js:
+
+        - Generate an optimized r.js build (build.js) with `grunt requirejs`. For more info, see rjs/build-commands.md
+        - Comment out the runtime async script loading, above
+        - Uncomment the script tag below
+    -->
+    <!--<script src="rjs/output/unified/build.js"></script>-->
+
+    <!--
+        Alternatively, also for testing r.js, use the multi-part build
+    -->
+    <!--<script src="rjs/output/parts/vendor.js"></script>-->
+    <!--<script src="rjs/output/parts/app.js"></script>-->
+
+    <script src="../close-build-info.js"></script>
 </body>
 </html>

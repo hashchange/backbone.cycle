@@ -1,13 +1,22 @@
 requirejs.config( {
 
-    baseUrl: '../../bower_components',
+    // Base URL: project root
+    baseUrl: "../../",
 
     paths: {
-        'jquery': '../demo/bower_demo_components/jquery/dist/jquery',
-        'underscore': 'underscore/underscore',
-        'backbone': 'backbone/backbone',
-        'backbone.select': 'backbone.select/dist/amd/backbone.select',
-        'backbone.cycle': '/dist/amd/backbone.cycle'
+        "jquery": "demo/bower_demo_components/jquery/dist/jquery",
+        "underscore": "bower_components/underscore/underscore",
+        "backbone": "bower_components/backbone/backbone",
+        "backbone.select": "bower_components/backbone.select/dist/amd/backbone.select",
+        "backbone.cycle": "dist/amd/backbone.cycle",
+
+        "local.main": "demo/amd/main"
+    },
+
+    shim: {
+        "jquery": {
+            exports: "jQuery"
+        }
     }
 
 } );

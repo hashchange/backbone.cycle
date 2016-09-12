@@ -1,4 +1,4 @@
-// amd.js
+// main.js
 
 require( [
 
