@@ -498,69 +498,74 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release notes
 
+### v2.1.4
+
+- Version is exposed in `Backbone.Cycle.version`
+- AMD demo allows testing r.js output
+
 ### v2.1.3
 
-* Updated bower.json, package.json for Backbone 1.3.x
+- Updated bower.json, package.json for Backbone 1.3.x
 
 ### v2.1.2
 
-* Fixed `select:one` event being fired by `autoSelect` during a reset, is silent now
+- Fixed `select:one` event being fired by `autoSelect` during a reset, is silent now
 
 ### v2.1.1
 
-* Made methods chainable which select a model
+- Made methods chainable which select a model
  
 ### v2.1.0
 
-* Added `label` support
+- Added `label` support
 
 ### v2.0.1
 
-* Fixed compatibility with Backbone 1.2.x
+- Fixed compatibility with Backbone 1.2.x
 
 ### v2.0.0
 
-* Added an `applyTo` setup method for Backbone.Cycle.Model, protecting the mixin from unintentional modification. The setup method _must_ be used – applying the mixin just by extending the host model no longer works.
-* Fixed compatibility with Underscore 1.7.0
-* Switched to plain objects as mixins internally
+- Added an `applyTo` setup method for Backbone.Cycle.Model, protecting the mixin from unintentional modification. The setup method _must_ be used – applying the mixin just by extending the host model no longer works.
+- Fixed compatibility with Underscore 1.7.0
+- Switched to plain objects as mixins internally
 
 ### v1.1.0
 
-* Renamed `initialSelection` to `autoSelect`; `initialSelection` is deprecated but kept around as an alias in 1.x
-* `autoSelect` no longer triggers a deselection event under any circumstances
-* `autoSelect` now accepts values "last" or an item index
+- Renamed `initialSelection` to `autoSelect`; `initialSelection` is deprecated but kept around as an alias in 1.x
+- `autoSelect` no longer triggers a deselection event under any circumstances
+- `autoSelect` now accepts values "last" or an item index
 
 ### v1.0.9, 1.0.10
 
-* Minor bug and documentation fixes
+- Minor bug and documentation fixes
 
 ### v1.0.8
 
-* Fleshed out package.json for npm installs
+- Fleshed out package.json for npm installs
 
 ### v1.0.4 - 1.0.7
 
-* Minor bug fixes
+- Minor bug fixes
 
 ### v1.0.3
 
-* Relaxed dependency requirements
+- Relaxed dependency requirements
 
 ### v1.0.2
 
-* Added _cycleType property to identify mixins in a model or collection
-* Fixed line endings in minified AMD build, added source map
-* Updated Backbone.Select dependency
-* Fixed bower.json ignore list
-* Fixed typos in readme
+- Added _cycleType property to identify mixins in a model or collection
+- Fixed line endings in minified AMD build, added source map
+- Updated Backbone.Select dependency
+- Fixed bower.json ignore list
+- Fixed typos in readme
 
 ### v1.0.1
 
-* Added documentation
+- Added documentation
 
 ### v1.0.0
 
-* Initial version
+- Initial version
 
 ## License
 
@@ -580,7 +585,7 @@ Copyright (c) 2014-2016 Michael Heim.
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
 [Grunt]: http://gruntjs.com/ "Grunt: The JavaScript Task Runner"
 [Karma]: http://karma-runner.github.io/ "Karma – Spectacular Test Runner for Javascript"
-[Mocha]: http://visionmedia.github.io/mocha/ "Mocha – the fun, simple, flexible JavaScript test framework"
+[Mocha]: http://mochajs.org/ "Mocha – the fun, simple, flexible JavaScript test framework"
 [Chai]: http://chaijs.com/ "Chai: a BDD / TDD assertion library"
 [Sinon]: http://sinonjs.org/ "Sinon.JS – Versatile standalone test spies, stubs and mocks for JavaScript"
 [JSHint]: http://www.jshint.com/ "JSHint, a JavaScript Code Quality Tool"
@@ -628,7 +633,7 @@ Copyright (c) 2014-2016 Michael Heim.
 
 [build]: #build-process-and-tests "Build process and tests"
 
-[demo-jsbin]: http://jsbin.com/johoha/2/edit?js,output "Backbone.Cycle: Demo (AMD) – JSBin"
+[demo-jsbin]: http://jsbin.com/johoha/4/edit?js,output "Backbone.Cycle: Demo (AMD) – JSBin"
 [demo-codepen]: http://codepen.io/hashchange/pen/OVeovy "Backbone.Cycle: Demo (AMD) – Codepen"
 
 [donations]: #facilitating-development "Facilitating development"
