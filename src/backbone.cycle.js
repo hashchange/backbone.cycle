@@ -327,7 +327,9 @@
 
             }
 
-        }
+        },
+
+        version: "__COMPONENT_VERSION_PLACEHOLDER__"
 
     };
 
