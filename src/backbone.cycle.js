@@ -1,4 +1,37 @@
-;( function( Backbone, _ ) {
+;( function ( root, factory ) {
+    "use strict";
+
+    // UMD for a Backbone plugin. Supports AMD, Node.js, CommonJS and globals.
+    //
+    // - Code lives in the Backbone namespace.
+    // - The module does not export a meaningful value.
+    // - The module does not create a global.
+
+    var supportsExports = typeof exports === "object" && exports && !exports.nodeType && typeof module === "object" && module && !module.nodeType;
+
+    // AMD:
+    // - Some AMD build optimizers like r.js check for condition patterns like the AMD check below, so keep it as is.
+    // - Check for `exports` after `define` in case a build optimizer adds an `exports` object.
+    // - The AMD spec requires the dependencies to be an array **literal** of module IDs. Don't use a variable there,
+    //   or optimizers may fail.
+    if ( typeof define === "function" && typeof define.amd === "object" && define.amd ) {
+
+        // AMD module
+        define( [ "exports", "underscore", "backbone", "backbone.select" ], factory );
+
+    } else if ( supportsExports ) {
+
+        // Node module, CommonJS module
+        factory( exports, require( "underscore" ), require( "backbone" ), require( "backbone.select" ) );
+
+    } else  {
+
+        // Global (browser or Rhino)
+        factory( {}, _, Backbone );
+
+    }
+
+}( this, function ( exports, _, Backbone ) {
     "use strict";
 
     var CycleMixins = {
@@ -418,4 +451,13 @@
         entity._cycleOpts[optionName] = hash;
     }
 
-}( Backbone, _ ));
+
+    // Module return value
+    // -------------------
+    //
+    // A return value may be necessary for AMD to detect that the module is loaded. It ony exists for that reason and is
+    // purely symbolic. Don't use it in client code. The functionality of this module lives in the Backbone namespace.
+    exports.info = "Backbone.Cycle has loaded. Don't use the exported value of the module. Its functionality is available inside the Backbone namespace.";
+
+} ) );
+

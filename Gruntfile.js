@@ -1,5 +1,5 @@
 /*global module:false*/
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   var LIVERELOAD_PORT = 35731,
       HTTP_PORT = 9400,
@@ -87,8 +87,7 @@ module.exports = function(grunt) {
     preprocess: {
       build: {
         files: {
-          'dist/backbone.cycle.js' : 'src/backbone.cycle.js',
-          'dist/amd/backbone.cycle.js' : 'src/amd.js'
+          'dist/backbone.cycle.js' : 'src/backbone.cycle.js'
         }
       },
       interactive: {
@@ -114,10 +113,6 @@ module.exports = function(grunt) {
       build: {
         src: 'dist/backbone.cycle.js',
         dest: 'dist/backbone.cycle.js'
-      },
-      amd_banner: {
-        src: 'dist/amd/backbone.cycle.js',
-        dest: 'dist/amd/backbone.cycle.js'
       }
     },
 
@@ -128,10 +123,6 @@ module.exports = function(grunt) {
           except: ['jQuery', 'Zepto', 'Backbone', '_']
         },
         sourceMap: true
-      },
-      amd: {
-        src : 'dist/amd/backbone.cycle.js',
-        dest : 'dist/amd/backbone.cycle.min.js'
       },
       core: {
         src: 'dist/backbone.cycle.js',

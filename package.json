@@ -9,7 +9,7 @@
   },
   "author": "Michael Heim <heim@zeilenwechsel.de> (http://www.zeilenwechsel.de/)",
   "description": "Navigating and selecting Backbone Models and Collections.",
-  "main": "dist/amd/backbone.cycle.js",
+  "main": "dist/backbone.cycle.js",
   "keywords": [
     "backbone",
     "picky",

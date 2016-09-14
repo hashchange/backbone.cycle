@@ -8,7 +8,7 @@ requirejs.config( {
         "underscore": "bower_components/underscore/underscore",
         "backbone": "bower_components/backbone/backbone",
         "backbone.select": "bower_components/backbone.select/dist/amd/backbone.select",
-        "backbone.cycle": "dist/amd/backbone.cycle",
+        "backbone.cycle": "dist/backbone.cycle",
 
         "local.main": "demo/amd/main"
     },
