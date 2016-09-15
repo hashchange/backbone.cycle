@@ -62,55 +62,6 @@
 
         } );
 
-        describe( 'Implicit switch to model-sharing mode', function () {
-
-            it( 'the collection stays in standard mode when the selectIfRemoved option is not passed in', function () {
-                collection = new Collection( models );
-                expect( collection._modelSharingEnabled ).not.to.be.true;
-            } );
-
-            it( 'the collection stays in standard mode when the selectIfRemoved option is set to "none"', function () {
-                collection = new Collection( models, { selectIfRemoved: "none" } );
-                expect( collection._modelSharingEnabled ).not.to.be.true;
-            } );
-
-            it( 'the collection stays in standard mode when the selectIfRemoved option is set to a hash containing only "none" values', function () {
-                collection = new Collection( models, { selectIfRemoved: { starred: "none", picked: "none" } } );
-                expect( collection._modelSharingEnabled ).not.to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "prev"', function () {
-                collection = new Collection( models, { selectIfRemoved: "prev" } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "next"', function () {
-                collection = new Collection( models, { selectIfRemoved: "next" } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "prevNoLoop"', function () {
-                collection = new Collection( models, { selectIfRemoved: "prevNoLoop" } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to "nextNoLoop"', function () {
-                collection = new Collection( models, { selectIfRemoved: "nextNoLoop" } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to a hash, with one property set to "next" and all others set to "none"', function () {
-                collection = new Collection( models, { selectIfRemoved: { selected: "none", starred: "next", ultraselected: "none" } } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the selectIfRemoved option is set to a hash, with all properties set to "next"', function () {
-                collection = new Collection( models, { selectIfRemoved: { selected: "next", starred: "next", ultraselected: "next" } } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-        } );
-
         describe( 'selectIfRemoved is set to "none"', function () {
 
             beforeEach( function () {

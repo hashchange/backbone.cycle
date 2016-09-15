@@ -67,55 +67,6 @@
 
         } );
 
-        describe( 'Implicit switch to model-sharing mode', function () {
-
-            it( 'the collection stays in standard mode when the autoSelect option is not passed in', function () {
-                collection = new Collection( models );
-                expect( collection._modelSharingEnabled ).not.to.be.true;
-            } );
-
-            it( 'the collection stays in standard mode when the autoSelect option is set to "none"', function () {
-                collection = new Collection( models, { autoSelect: "none" } );
-                expect( collection._modelSharingEnabled ).not.to.be.true;
-            } );
-
-            it( 'the collection stays in standard mode when the autoSelect option is set to a hash containing only "none" values', function () {
-                collection = new Collection( models, { autoSelect: { starred: "none", picked: "none" } } );
-                expect( collection._modelSharingEnabled ).not.to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the autoSelect option is set to "first"', function () {
-                collection = new Collection( models, { autoSelect: "first" } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the autoSelect option is set to "last"', function () {
-                collection = new Collection( models, { autoSelect: "last" } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the autoSelect option is set to a number', function () {
-                collection = new Collection( models, { autoSelect: 100 } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the autoSelect option is set to a number, passed in as a string', function () {
-                collection = new Collection( models, { autoSelect: "100" } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the autoSelect option is set to a hash, with one property set to "first" and all others set to "none"', function () {
-                collection = new Collection( models, { autoSelect: { selected: "none", starred: "first", ultraselected: "none" } } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-            it( 'the collection is switched over to model-sharing mode when the autoSelect option is set to a hash, with all properties set to "first"', function () {
-                collection = new Collection( models, { autoSelect: { selected: "first", starred: "first", ultraselected: "first" } } );
-                expect( collection._modelSharingEnabled ).to.be.true;
-            } );
-
-        } );
-
         describe( 'autoSelect is set to "none"', function () {
 
             describe( 'all models are deselected initially', function () {
