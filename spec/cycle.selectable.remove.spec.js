@@ -86,25 +86,22 @@
 
             } );
 
-            describe( 'the removed model has been selected (model-sharing mode is off)', function () {
+            describe( 'the removed model has been selected', function () {
 
                 beforeEach( function () {
                     collection.select( m2 );
                     collection.remove( m2 );
                 } );
 
-                // With model-sharing mode off, and nothing listening to remove events (selectIfRemoved is "none"),
-                // the removal won't be detected. The onus is on the calling code to handle it correctly.
+                // NB The test is only here for consistency, there is no real need to test it here. The case is handled
+                // by Backbone.Select anyway, and tested there.
 
-                // NB No need to test this with model-sharing mode enabled. That case is handled by Backbone.Select
-                // anyway, and tested there.
-
-                it( 'the removed model is NOT deselected', function () {
-                    expect( m2.selected ).to.be.true;
+                it( 'the removed model is deselected', function () {
+                    expect( m2.selected ).to.be.false;
                 } );
 
-                it( 'the selection in the collection is still referencing the removed model (!)', function () {
-                    expect( collection.selected ).to.deep.equal( m2 );
+                it( 'the selection in the collection is no longer referencing the removed model', function () {
+                    expect( collection.selected ).not.to.deep.equal( m2 );
                 } );
 
             } );
