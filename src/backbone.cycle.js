@@ -292,7 +292,7 @@
              */
             applyTo: function ( hostObject, models, options ) {
 
-                var enableInitialSelection, enableSelectIfRemoved, enableModelSharing, autoSelectIndex;
+                var enableInitialSelection, enableSelectIfRemoved, autoSelectIndex;
 
                 // Enforcing the presence of the models argument. (The rest of the arg validation is handled by
                 // Backbone.Select.One.)
@@ -315,10 +315,9 @@
 
                 enableInitialSelection = isActiveOption( hostObject._cycleOpts.autoSelect );
                 enableSelectIfRemoved = isActiveOption( hostObject._cycleOpts.selectIfRemoved );
-                enableModelSharing = options.enableModelSharing || enableInitialSelection || enableSelectIfRemoved;
 
                 // Apply the Backbone.Select.One mixin
-                Backbone.Select.One.applyTo( hostObject, models, _.extend( {}, options, { enableModelSharing: enableModelSharing } ) );
+                Backbone.Select.One.applyTo( hostObject, models, options );
 
                 // Apply the Cycle.SelectableCollection mixin
                 _.extend( hostObject, CycleMixins.SelectableCollection );
