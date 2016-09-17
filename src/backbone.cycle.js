@@ -182,11 +182,11 @@
                             // being reset. Events on the model, and in other collections sharing the model, must fire
                             // as usual.
                             //
-                            // That can be achieved with the _silentLocally flag. It is undocumented and internal to
+                            // That can be achieved with the silentLocally flag. It is undocumented and internal to
                             // Backbone.Select, but does exactly that. It acts as `silent: true` only for the initial
                             // select() call, without silencing secondary ones.
 
-                            selectOptions = isReset ? { label: label, _silentLocally: true } : { label: label };
+                            selectOptions = isReset ? { label: label, "@bbs:silentLocally": true } : { label: label };
                             this.selectAt( autoSelectAt, selectOptions );
 
                         }
