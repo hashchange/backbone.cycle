@@ -69,11 +69,11 @@
 
         describe( 'autoSelect is set to "none"', function () {
 
-            describe( 'all models are deselected initially', function () {
+            beforeEach( function () {
+                Collection = bindOptions( { autoSelect: "none" } );
+            } );
 
-                beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: "none" } );
-                } );
+            describe( 'all models are deselected initially', function () {
 
                 it( 'when they are passed to the constructor, they remain unselected', function () {
                     collection = new Collection( models );
@@ -100,17 +100,9 @@
 
             } );
 
-            describe( 'when model sharing is enabled, and one of the models is already selected initially', function () {
-
-                // A model being selected before it is even part of a collection: that is a scenario which only ought to
-                // happen with model sharing.
-
-                // There are no tests here for adding and resetting with the silent option. As stated in the
-                // Backbone.Select documentation, the silent option can't be used for these actions when model sharing
-                // is enabled.
+            describe( 'when one of the models is already selected initially', function () {
 
                 beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: "none", enableModelSharing: true } );
                     m2.select();
                 } );
 
@@ -129,9 +121,25 @@
                     expect( getSelected( models ) ).to.deep.equal( [m2] );
                 } );
 
+                it( 'when they are batch-added as the initial models, with options.silent enabled, the selection remains unchanged', function () {
+                    collection = new Collection();
+                    collection.add( models, { silent: true } );
+
+                    expect( collection.selected ).to.deep.equal( m2 );
+                    expect( getSelected( models ) ).to.deep.equal( [m2] );
+                } );
+
                 it( 'when they are passed in on reset, the selection remains unchanged', function () {
                     collection = new Collection();
                     collection.reset( models );
+
+                    expect( collection.selected ).to.deep.equal( m2 );
+                    expect( getSelected( models ) ).to.deep.equal( [m2] );
+                } );
+
+                it( 'when they are passed in on reset, with options.silent enabled, the selection remains unchanged', function () {
+                    collection = new Collection();
+                    collection.reset( models, { silent: true } );
 
                     expect( collection.selected ).to.deep.equal( m2 );
                     expect( getSelected( models ) ).to.deep.equal( [m2] );
@@ -143,11 +151,14 @@
 
         describe( 'autoSelect is set to "first"', function () {
 
+            beforeEach( function () {
+                Collection = bindOptions( { autoSelect: "first" } );
+            } );
+
             describe( 'all models are deselected initially', function () {
 
                 beforeEach( function () {
                     events = getEventSpies( models );
-                    Collection = bindOptions( { autoSelect: "first", enableModelSharing: true } );
                 } );
 
                 describe( 'when they are passed to the constructor', function () {
@@ -213,6 +224,44 @@
 
                 } );
 
+                describe( 'when they are batch-added as the initial models, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( models.concat( collection ) );
+
+                        collection.add( models, { silent: true } );
+                    } );
+
+                    it( 'the first model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( m1 );
+                        expect( getSelected( models ) ).not.to.deep.equal( [m1] );
+
+                        expect( collection.selected ).to.be.undefined;
+                        expect( getSelected( models ) ).to.be.empty;
+                    } );
+
+                    it( 'no selected event is triggered on the first model', function () {
+                        expect( events.get( m1, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselected event is triggered on any model', function () {
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when they are passed in on reset', function () {
 
                     beforeEach( function () {
@@ -238,39 +287,39 @@
 
                 } );
 
-                it( 'when they are batch-added as the initial models, with the silent option, no selection is made', function () {
-                    // The automatic selection can't be triggered when adding models silently.
+                describe( 'when they are passed in on reset, with options.silent enabled', function () {
 
-                    collection = new Collection();
-                    collection.add( models, { silent: true } );
+                    beforeEach( function () {
+                        collection = new Collection();
 
-                    expect( collection.selected ).to.be.undefined;
-                    expect( getSelected( models ) ).to.be.empty;
-                } );
+                        events = getEventSpies( [m1, collection] );
 
-                it( 'when they are are passed in on reset, with the silent option, no selection is made', function () {
-                    // See above. Also, resetting a collection silently is not allowed in model-sharing mode.
+                        collection.reset( models, { silent: true } );
+                    } );
 
-                    collection = new Collection();
-                    collection.reset( models, { silent: true } );
+                    it( 'the first model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( m1 );
+                        expect( getSelected( models ) ).not.to.deep.equal( [m1] );
 
-                    expect( collection.selected ).to.be.undefined;
-                    expect( getSelected( models ) ).to.be.empty;
+                        expect( collection.selected ).to.be.undefined;
+                        expect( getSelected( models ) ).to.be.empty;
+                    } );
+
+                    it( 'no selected event is triggered on the first model', function () {
+                        expect( events.get( m1, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
                 } );
 
             } );
 
             describe( 'one of the models - but not the first one - is already selected initially', function () {
 
-                // A model being selected before it is even part of a collection: that is a scenario which only ought to
-                // happen with model sharing.
-
-                // There are no tests here for adding and resetting with the silent option. As stated in the
-                // Backbone.Select documentation, the silent option can't be used for these actions when model sharing
-                // is enabled.
-
                 beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: "first", enableModelSharing: true } );
                     m2.select();
                 } );
 
@@ -325,6 +374,31 @@
 
                 } );
 
+                describe( 'when they are batch-added as the initial models, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( [m1, collection] );
+
+                        collection.add( models, { silent: true } );
+                    } );
+
+                    it( 'the selection remains unchanged', function () {
+                        expect( collection.selected ).to.deep.equal( m2 );
+                        expect( getSelected( models ) ).to.deep.equal( [m2] );
+                    } );
+
+                    it( 'no deselected event is triggered on the first model', function () {
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when they are passed in on reset', function () {
 
                     beforeEach( function () {
@@ -352,6 +426,31 @@
 
                 } );
 
+                describe( 'when they are passed in on reset, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( [m1, collection] );
+
+                        collection.reset( models, { silent: true } );
+                    } );
+
+                    it( 'the selection remains unchanged', function () {
+                        expect( collection.selected ).to.deep.equal( m2 );
+                        expect( getSelected( models ) ).to.deep.equal( [m2] );
+                    } );
+
+                    it( 'no deselected event is triggered on the first model', function () {
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
             } );
 
             describe( 'the collection is already populated, without a selection', function () {
@@ -359,8 +458,6 @@
                 var newModels, allModels, mA, mB;
 
                 beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: "first", enableModelSharing: true } );
-
                     mA = new Model();
                     mB = new Model();
 
@@ -405,6 +502,48 @@
 
                     it( 'no deselect:one event is triggered on the collection', function () {
                         // See above.
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
+                describe( 'when new models are batch-added to the end, with options.silent enabled, and none of the models is selected', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+                        collection.add( models );
+                        collection.deselect();
+
+                        events = getEventSpies( allModels.concat( collection ) );
+
+                        collection.add( newModels, { silent: true } );
+                    } );
+
+                    it( 'the first model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( m1 );
+                        expect( getSelected( allModels ) ).not.to.deep.equal( [m1] );
+
+                        expect( collection.selected ).to.be.undefined ;
+                        expect( getSelected( allModels ) ).to.deep.equal( [] );
+                    } );
+
+                    it( 'no selected event is triggered on the first model', function () {
+                        expect( events.get( m1, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselected event is triggered on any model', function () {
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
                         expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
                     } );
 
@@ -484,6 +623,51 @@
 
                 } );
 
+                describe( 'when new models are batch-added at the front, with options.silent enabled, and none of the models is selected', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+                        collection.add( models );
+                        collection.deselect();
+
+                        events = getEventSpies( allModels.concat( collection ) );
+
+                        collection.add( newModels, { at: 0, silent: true } );
+                    } );
+
+                    it( 'the first model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( mA );
+                        expect( getSelected( allModels ) ).not.to.deep.equal( [mA] );
+
+                        expect( collection.selected ).to.be.undefined;
+                        expect( getSelected( allModels ) ).to.deep.equal( [] );
+                    } );
+
+                    it( 'no selected event is triggered on the first model', function () {
+                        expect( events.get( mA, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselected event is triggered on any model', function () {
+                        // Meaning that the only selection taking place is that of the first model, without being
+                        // preceded by a string of selections and deselections on other models beforehand.
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        // See above.
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when new models are batch-added at the front, and one of them is selected', function () {
 
                     beforeEach( function () {
@@ -525,11 +709,11 @@
 
         describe( 'autoSelect is set to "last"', function () {
 
-            describe( 'all models are deselected initially', function () {
+            beforeEach( function () {
+                Collection = bindOptions( { autoSelect: "last" } );
+            } );
 
-                beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: "last", enableModelSharing: true } );
-                } );
+            describe( 'all models are deselected initially', function () {
 
                 describe( 'when they are passed to the constructor', function () {
 
@@ -593,6 +777,44 @@
 
                 } );
 
+                describe( 'when they are batch-added as the initial models, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( models.concat( collection ) );
+
+                        collection.add( models, { silent: true } );
+                    } );
+
+                    it( 'the last model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( m3 );
+                        expect( getSelected( models ) ).not.to.deep.equal( [m3] );
+
+                        expect( collection.selected ).to.be.undefined;
+                        expect( getSelected( models ) ).to.be.empty;
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        expect( events.get( m3, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselected event is triggered on any model', function () {
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when they are passed in on reset', function () {
 
                     beforeEach( function () {
@@ -618,39 +840,39 @@
 
                 } );
 
-                it( 'when they are batch-added as the initial models, with the silent option, no selection is made', function () {
-                    // The automatic selection can't be triggered when adding models silently.
+                describe( 'when they are passed in on reset, with options.silent enabled', function () {
 
-                    collection = new Collection();
-                    collection.add( models, { silent: true } );
+                    beforeEach( function () {
+                        collection = new Collection();
 
-                    expect( collection.selected ).to.be.undefined;
-                    expect( getSelected( models ) ).to.be.empty;
-                } );
+                        events = getEventSpies( [m3, collection] );
 
-                it( 'when they are are passed in on reset, with the silent option, no selection is made', function () {
-                    // See above. Also, resetting a collection silently is not allowed in model-sharing mode.
+                        collection.reset( models, { silent: true } );
+                    } );
 
-                    collection = new Collection();
-                    collection.reset( models, { silent: true } );
+                    it( 'the last model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( m3 );
+                        expect( getSelected( models ) ).not.to.deep.equal( [m3] );
 
-                    expect( collection.selected ).to.be.undefined;
-                    expect( getSelected( models ) ).to.be.empty;
+                        expect( collection.selected ).to.be.undefined;
+                        expect( getSelected( models ) ).to.be.empty;
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        expect( events.get( m3, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
                 } );
 
             } );
 
             describe( 'one of the models - but not the last one - is already selected initially', function () {
 
-                // A model being selected before it is even part of a collection: that is a scenario which only ought to
-                // happen with model sharing.
-
-                // There are no tests here for adding and resetting with the silent option. As stated in the
-                // Backbone.Select documentation, the silent option can't be used for these actions when model sharing
-                // is enabled.
-
                 beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: "last", enableModelSharing: true } );
                     m2.select();
                 } );
 
@@ -705,6 +927,31 @@
 
                 } );
 
+                describe( 'when they are batch-added as the initial models, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( [m3, collection] );
+
+                        collection.add( models, { silent: true } );
+                    } );
+
+                    it( 'the selection remains unchanged', function () {
+                        expect( collection.selected ).to.deep.equal( m2 );
+                        expect( getSelected( models ) ).to.deep.equal( [m2] );
+                    } );
+
+                    it( 'no deselected event is triggered on the last model', function () {
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when they are passed in on reset', function () {
 
                     beforeEach( function () {
@@ -732,6 +979,31 @@
 
                 } );
 
+                describe( 'when they are passed in on reset, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( [m3, collection] );
+
+                        collection.reset( models, { silent: true } );
+                    } );
+
+                    it( 'the selection remains unchanged', function () {
+                        expect( collection.selected ).to.deep.equal( m2 );
+                        expect( getSelected( models ) ).to.deep.equal( [m2] );
+                    } );
+
+                    it( 'no deselected event is triggered on the last model', function () {
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
             } );
 
             describe( 'the collection is already populated, without a selection', function () {
@@ -739,8 +1011,6 @@
                 var newModels, allModels, mA, mB;
 
                 beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: "last", enableModelSharing: true } );
-
                     mA = new Model();
                     mB = new Model();
 
@@ -789,6 +1059,49 @@
 
                     it( 'no deselect:one event is triggered on the collection', function () {
                         // See above.
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
+                describe( 'when new models are batch-added to the end, with options.silent enabled, and none of the models is selected', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+                        collection.add( models );
+                        collection.deselect();
+
+                        events = getEventSpies( allModels.concat( collection ) );
+
+                        collection.add( newModels, { silent: true } );
+                    } );
+
+                    it( 'the last model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( mB );
+                        expect( getSelected( allModels ) ).not.to.deep.equal( [mB] );
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        expect( events.get( mB, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no selected event is triggered on the first model of the new batch', function () {
+                        expect( events.get( mA, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselected event is triggered on any model', function () {
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
                         expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
                     } );
 
@@ -871,6 +1184,45 @@
 
                 } );
 
+                describe( 'when new models are batch-added at the front, with options.silent enabled, and none of the models is selected', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+                        collection.add( models );
+                        collection.deselect();
+
+                        events = getEventSpies( allModels.concat( collection ) );
+
+                        collection.add( newModels, { at: 0, silent: true } );
+                    } );
+
+                    it( 'the last model is not selected', function () {
+                        expect( collection.selected ).not.to.deep.equal( m3 );
+                        expect( getSelected( allModels ) ).not.to.deep.equal( [m3] );
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        expect( events.get( m3, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselected event is triggered on any model', function () {
+                        expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                        expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when new models are batch-added at the front, and one of them is selected', function () {
 
                     beforeEach( function () {
@@ -918,7 +1270,7 @@
                 describe( 'the autoSelect index matches a model', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { autoSelect: 1, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 1 } );
                     } );
 
                     describe( 'when models are passed to the constructor', function () {
@@ -983,6 +1335,41 @@
 
                     } );
 
+                    describe( 'when models are batch-added as the initial models, with options.silent enabled', function () {
+
+                        beforeEach( function () {
+                            collection = new Collection();
+
+                            events = getEventSpies( models.concat( collection ) );
+
+                            collection.add( models, { silent: true } );
+                        } );
+
+                        it( 'the model matching the index is not selected', function () {
+                            expect( collection.selected ).not.to.deep.equal( m2 );
+                            expect( getSelected( models ) ).not.to.deep.equal( [m2] );
+                        } );
+
+                        it( 'no selected event is triggered on the matching model', function () {
+                            expect( events.get( m2, "selected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no select:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselected event is triggered on any model', function () {
+                            expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselect:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                        } );
+
+                    } );
+
                     describe( 'when models are passed in on reset', function () {
 
                         beforeEach( function () {
@@ -1008,12 +1395,37 @@
 
                     } );
 
+                    describe( 'when models are passed in on reset, with options.silent enabled', function () {
+
+                        beforeEach( function () {
+                            collection = new Collection();
+
+                            events = getEventSpies( [m2, collection] );
+
+                            collection.reset( models, { silent: true } );
+                        } );
+
+                        it( 'the model matching the index is not selected', function () {
+                            expect( collection.selected ).not.to.deep.equal( m2 );
+                            expect( getSelected( models ) ).not.to.deep.equal( [m2] );
+                        } );
+
+                        it( 'no selected event is triggered on the matching model', function () {
+                            expect( events.get( m2, "selected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no select:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                        } );
+
+                    } );
+
                 } );
 
                 describe( 'the index number does not match a model', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { autoSelect: 100, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 100 } );
                     } );
 
                     it( 'when the models are passed to the constructor, no selection is made', function () {
@@ -1041,40 +1453,12 @@
 
                 } );
 
-                it( 'when they are batch-added as the initial models, with the silent option, no selection is made', function () {
-                    // The automatic selection can't be triggered when adding models silently.
-
-                    collection = new Collection();
-                    collection.add( models, { silent: true } );
-
-                    expect( collection.selected ).to.be.undefined;
-                    expect( getSelected( models ) ).to.be.empty;
-                } );
-
-                it( 'when they are are passed in on reset, with the silent option, no selection is made', function () {
-                    // See above. Also, resetting a collection silently is not allowed in model-sharing mode.
-
-                    collection = new Collection();
-                    collection.reset( models, { silent: true } );
-
-                    expect( collection.selected ).to.be.undefined;
-                    expect( getSelected( models ) ).to.be.empty;
-                } );
-
-                
             } );
 
             describe( 'one of the models - but not the last one - is already selected initially', function () {
 
-                // A model being selected before it is even part of a collection: that is a scenario which only ought to
-                // happen with model sharing.
-
-                // There are no tests here for adding and resetting with the silent option. As stated in the
-                // Backbone.Select documentation, the silent option can't be used for these actions when model sharing
-                // is enabled.
-
                 beforeEach( function () {
-                    Collection = bindOptions( { autoSelect: 1, enableModelSharing: true } );
+                    Collection = bindOptions( { autoSelect: 1 } );
                     m3.select();
                 } );
 
@@ -1129,6 +1513,31 @@
 
                 } );
 
+                describe( 'when they are batch-added as the initial models, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( [m2, collection] );
+
+                        collection.add( models, { silent: true } );
+                    } );
+
+                    it( 'the selection remains unchanged', function () {
+                        expect( collection.selected ).to.deep.equal( m3 );
+                        expect( getSelected( models ) ).to.deep.equal( [m3] );
+                    } );
+
+                    it( 'no deselected event is triggered on the model matching the index', function () {
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when they are passed in on reset', function () {
 
                     beforeEach( function () {
@@ -1156,6 +1565,31 @@
 
                 } );
 
+                describe( 'when they are passed in on reset, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( [m2, collection] );
+
+                        collection.reset( models, { silent: true } );
+                    } );
+
+                    it( 'the selection remains unchanged', function () {
+                        expect( collection.selected ).to.deep.equal( m3 );
+                        expect( getSelected( models ) ).to.deep.equal( [m3] );
+                    } );
+
+                    it( 'no deselected event is triggered on the model matching the index', function () {
+                        expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection', function () {
+                        expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
             } );
 
             describe( 'the collection is already populated, without a selection', function () {
@@ -1173,7 +1607,7 @@
                 describe( 'the autoSelect index is within the original collection range', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { autoSelect: 1, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 1 } );
                     } );
 
                     describe( 'when new models are batch-added to the end, and none of them is selected', function () {
@@ -1213,6 +1647,45 @@
 
                         it( 'no deselect:one event is triggered on the collection', function () {
                             // See above.
+                            expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                        } );
+
+                    } );
+
+                    describe( 'when new models are batch-added to the end, with options.silent enabled, and none of the models is selected', function () {
+
+                        beforeEach( function () {
+                            collection = new Collection();
+                            collection.add( models );
+                            collection.deselect();
+
+                            events = getEventSpies( allModels.concat( collection ) );
+
+                            collection.add( newModels, { silent: true } );
+                        } );
+
+                        it( 'the model matching the index is not selected', function () {
+                            expect( collection.selected ).not.to.deep.equal( m2 );
+                            expect( getSelected( allModels ) ).not.to.deep.equal( [m2] );
+                        } );
+
+                        it( 'no selected event is triggered on the matching model', function () {
+                            expect( events.get( m2, "selected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no select:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselected event is triggered on any model', function () {
+                            expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselect:one event is triggered on the collection', function () {
                             expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
                         } );
 
@@ -1296,6 +1769,45 @@
 
                     } );
 
+                    describe( 'when new models are batch-added at the front, with options.silent enabled, and none of the models is selected', function () {
+
+                        beforeEach( function () {
+                            collection = new Collection();
+                            collection.add( models );
+                            collection.deselect();
+
+                            events = getEventSpies( allModels.concat( collection ) );
+
+                            collection.add( newModels, { at: 0, silent: true } );
+                        } );
+
+                        it( 'the model matching the index is not selected', function () {
+                            expect( collection.selected ).not.to.deep.equal( mB );
+                            expect( getSelected( allModels ) ).not.to.deep.equal( [mB] );
+                        } );
+
+                        it( 'no selected event is triggered on the matching model', function () {
+                            expect( events.get( mB, "selected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no select:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselected event is triggered on any model', function () {
+                            expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselect:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                        } );
+
+                    } );
+
                     describe( 'when new models are batch-added at the front, and one of them is selected', function () {
 
                         beforeEach( function () {
@@ -1337,7 +1849,7 @@
                 describe( 'the autoSelect index is outside of the original collection range, but within the range after adding more models', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { autoSelect: 3, enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: 3 } );
                     } );
 
                     describe( 'when new models are batch-added to the end, and none of them is selected', function () {
@@ -1377,6 +1889,45 @@
 
                         it( 'no deselect:one event is triggered on the collection', function () {
                             // See above.
+                            expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                        } );
+
+                    } );
+
+                    describe( 'when new models are batch-added to the end, with options.silent enabled, and none of the models is selected', function () {
+
+                        beforeEach( function () {
+                            collection = new Collection();
+                            collection.add( models );
+                            collection.deselect();
+
+                            events = getEventSpies( allModels.concat( collection ) );
+
+                            collection.add( newModels, { silent: true } );
+                        } );
+
+                        it( 'the model matching the index is not selected', function () {
+                            expect( collection.selected ).not.to.deep.equal( mA );
+                            expect( getSelected( allModels ) ).not.to.deep.equal( [mA] );
+                        } );
+
+                        it( 'no selected event is triggered on the matching model', function () {
+                            expect( events.get( mA, "selected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no select:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselected event is triggered on any model', function () {
+                            expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselect:one event is triggered on the collection', function () {
                             expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
                         } );
 
@@ -1456,6 +2007,45 @@
 
                     } );
 
+                    describe( 'when new models are batch-added at the front, with options.silent enabled, and none of them is selected', function () {
+
+                        beforeEach( function () {
+                            collection = new Collection();
+                            collection.add( models );
+                            collection.deselect();
+
+                            events = getEventSpies( allModels.concat( collection ) );
+
+                            collection.add( newModels, { at: 0, silent: true } );
+                        } );
+
+                        it( 'the model matching the index is not selected', function () {
+                            expect( collection.selected ).not.to.deep.equal( m2 );
+                            expect( getSelected( allModels ) ).not.to.deep.equal( [m2] );
+                        } );
+
+                        it( 'no selected event is triggered on the matching model', function () {
+                            expect( events.get( m2, "selected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no select:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselected event is triggered on any model', function () {
+                            expect( events.get( m1, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m2, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mA, "deselected" ) ).not.to.have.been.called;
+                            expect( events.get( mB, "deselected" ) ).not.to.have.been.called;
+                        } );
+
+                        it( 'no deselect:one event is triggered on the collection', function () {
+                            expect( events.get( collection, "deselect:one" ) ).not.to.have.been.called;
+                        } );
+
+                    } );
+
                     describe( 'when new models are batch-added at the front, and one of them is selected', function () {
 
                         beforeEach( function () {
@@ -1497,7 +2087,7 @@
                 describe( 'the index matches a model', function () {
 
                     beforeEach( function () {
-                        Collection = bindOptions( { autoSelect: "1", enableModelSharing: true } );
+                        Collection = bindOptions( { autoSelect: "1" } );
                     } );
 
                     it( 'the model matching the index is selected when models are passed to the constructor', function () {
@@ -1532,7 +2122,7 @@
         describe( 'autoSelect is set to a hash (label "starred" set to "first", label "picked" set to "last")', function () {
 
             beforeEach( function () {
-                Collection = bindOptions( { autoSelect: { starred: "first", picked: "last" }, enableModelSharing: true } );
+                Collection = bindOptions( { autoSelect: { starred: "first", picked: "last" } } );
             } );
 
             describe( 'all models are deselected initially', function () {
@@ -1752,13 +2342,6 @@
             } );
 
             describe( 'one of the models - but not the first one - is already starred initially, likewise for "picked" (not the last one)', function () {
-
-                // A model being selected (with a label) before it is even part of a collection: that is a scenario
-                // which only ought to happen with model sharing.
-
-                // There are no tests here for adding and resetting with the silent option. As stated in the
-                // Backbone.Select documentation, the silent option can't be used for these actions when model sharing
-                // is enabled.
 
                 beforeEach( function () {
                     m2.select( { label: "starred" } );
@@ -2380,7 +2963,7 @@
             describe( 'initialSelection is set to "first"', function () {
 
                 beforeEach( function () {
-                    Collection = bindOptions( { initialSelection: "first", enableModelSharing: true } );
+                    Collection = bindOptions( { initialSelection: "first" } );
                 } );
 
                 it( 'the first model is selected when models are passed to the constructor', function () {

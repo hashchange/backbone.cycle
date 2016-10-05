@@ -15,7 +15,7 @@
 
             Collection = Backbone.Collection.extend( {
                 initialize: function ( models ) {
-                    Backbone.Cycle.SelectableCollection.applyTo( this, models, { enableModelSharing: true } );
+                    Backbone.Cycle.SelectableCollection.applyTo( this, models );
                 }
             } );
 
