@@ -21,8 +21,8 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~3.1.0",
-    "requirejs": "~2.3.1",
+    "jquery": "~3.1.1",
+    "requirejs": "~2.3.2",
     "foundation": "~5.5.3",
     "backbone.picky": "~0.2.0"
   }
