@@ -234,12 +234,9 @@
                         collection.add( models, { silent: true } );
                     } );
 
-                    it( 'the first model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( m1 );
-                        expect( getSelected( models ) ).not.to.deep.equal( [m1] );
-
-                        expect( collection.selected ).to.be.undefined;
-                        expect( getSelected( models ) ).to.be.empty;
+                    it( 'the first model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( m1 );
+                        expect( getSelected( models ) ).to.deep.equal( [m1] );
                     } );
 
                     it( 'no selected event is triggered on the first model', function () {
@@ -297,12 +294,9 @@
                         collection.reset( models, { silent: true } );
                     } );
 
-                    it( 'the first model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( m1 );
-                        expect( getSelected( models ) ).not.to.deep.equal( [m1] );
-
-                        expect( collection.selected ).to.be.undefined;
-                        expect( getSelected( models ) ).to.be.empty;
+                    it( 'the first model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( m1 );
+                        expect( getSelected( models ) ).to.deep.equal( [m1] );
                     } );
 
                     it( 'no selected event is triggered on the first model', function () {
@@ -519,12 +513,9 @@
                         collection.add( newModels, { silent: true } );
                     } );
 
-                    it( 'the first model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( m1 );
-                        expect( getSelected( allModels ) ).not.to.deep.equal( [m1] );
-
-                        expect( collection.selected ).to.be.undefined ;
-                        expect( getSelected( allModels ) ).to.deep.equal( [] );
+                    it( 'the first model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( m1 );
+                        expect( getSelected( allModels ) ).to.deep.equal( [m1] );
                     } );
 
                     it( 'no selected event is triggered on the first model', function () {
@@ -635,12 +626,9 @@
                         collection.add( newModels, { at: 0, silent: true } );
                     } );
 
-                    it( 'the first model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( mA );
-                        expect( getSelected( allModels ) ).not.to.deep.equal( [mA] );
-
-                        expect( collection.selected ).to.be.undefined;
-                        expect( getSelected( allModels ) ).to.deep.equal( [] );
+                    it( 'the first model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( mA );
+                        expect( getSelected( allModels ) ).to.deep.equal( [mA] );
                     } );
 
                     it( 'no selected event is triggered on the first model', function () {
@@ -787,12 +775,9 @@
                         collection.add( models, { silent: true } );
                     } );
 
-                    it( 'the last model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( m3 );
-                        expect( getSelected( models ) ).not.to.deep.equal( [m3] );
-
-                        expect( collection.selected ).to.be.undefined;
-                        expect( getSelected( models ) ).to.be.empty;
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( m3 );
+                        expect( getSelected( models ) ).to.deep.equal( [m3] );
                     } );
 
                     it( 'no selected event is triggered on the last model', function () {
@@ -850,12 +835,9 @@
                         collection.reset( models, { silent: true } );
                     } );
 
-                    it( 'the last model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( m3 );
-                        expect( getSelected( models ) ).not.to.deep.equal( [m3] );
-
-                        expect( collection.selected ).to.be.undefined;
-                        expect( getSelected( models ) ).to.be.empty;
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( m3 );
+                        expect( getSelected( models ) ).to.deep.equal( [m3] );
                     } );
 
                     it( 'no selected event is triggered on the last model', function () {
@@ -1076,9 +1058,9 @@
                         collection.add( newModels, { silent: true } );
                     } );
 
-                    it( 'the last model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( mB );
-                        expect( getSelected( allModels ) ).not.to.deep.equal( [mB] );
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( mB );
+                        expect( getSelected( allModels ) ).to.deep.equal( [mB] );
                     } );
 
                     it( 'no selected event is triggered on the last model', function () {
@@ -1196,9 +1178,9 @@
                         collection.add( newModels, { at: 0, silent: true } );
                     } );
 
-                    it( 'the last model is not selected', function () {
-                        expect( collection.selected ).not.to.deep.equal( m3 );
-                        expect( getSelected( allModels ) ).not.to.deep.equal( [m3] );
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.deep.equal( m3 );
+                        expect( getSelected( allModels ) ).to.deep.equal( [m3] );
                     } );
 
                     it( 'no selected event is triggered on the last model', function () {
@@ -1345,9 +1327,9 @@
                             collection.add( models, { silent: true } );
                         } );
 
-                        it( 'the model matching the index is not selected', function () {
-                            expect( collection.selected ).not.to.deep.equal( m2 );
-                            expect( getSelected( models ) ).not.to.deep.equal( [m2] );
+                        it( 'the model matching the index is selected', function () {
+                            expect( collection.selected ).to.deep.equal( m2 );
+                            expect( getSelected( models ) ).to.deep.equal( [m2] );
                         } );
 
                         it( 'no selected event is triggered on the matching model', function () {
@@ -1405,9 +1387,9 @@
                             collection.reset( models, { silent: true } );
                         } );
 
-                        it( 'the model matching the index is not selected', function () {
-                            expect( collection.selected ).not.to.deep.equal( m2 );
-                            expect( getSelected( models ) ).not.to.deep.equal( [m2] );
+                        it( 'the model matching the index is selected', function () {
+                            expect( collection.selected ).to.deep.equal( m2 );
+                            expect( getSelected( models ) ).to.deep.equal( [m2] );
                         } );
 
                         it( 'no selected event is triggered on the matching model', function () {
@@ -1664,9 +1646,9 @@
                             collection.add( newModels, { silent: true } );
                         } );
 
-                        it( 'the model matching the index is not selected', function () {
-                            expect( collection.selected ).not.to.deep.equal( m2 );
-                            expect( getSelected( allModels ) ).not.to.deep.equal( [m2] );
+                        it( 'the model matching the index is selected', function () {
+                            expect( collection.selected ).to.deep.equal( m2 );
+                            expect( getSelected( allModels ) ).to.deep.equal( [m2] );
                         } );
 
                         it( 'no selected event is triggered on the matching model', function () {
@@ -1781,9 +1763,9 @@
                             collection.add( newModels, { at: 0, silent: true } );
                         } );
 
-                        it( 'the model matching the index is not selected', function () {
-                            expect( collection.selected ).not.to.deep.equal( mB );
-                            expect( getSelected( allModels ) ).not.to.deep.equal( [mB] );
+                        it( 'the model matching the index is selected', function () {
+                            expect( collection.selected ).to.deep.equal( mB );
+                            expect( getSelected( allModels ) ).to.deep.equal( [mB] );
                         } );
 
                         it( 'no selected event is triggered on the matching model', function () {
@@ -1906,9 +1888,9 @@
                             collection.add( newModels, { silent: true } );
                         } );
 
-                        it( 'the model matching the index is not selected', function () {
-                            expect( collection.selected ).not.to.deep.equal( mA );
-                            expect( getSelected( allModels ) ).not.to.deep.equal( [mA] );
+                        it( 'the model matching the index is selected', function () {
+                            expect( collection.selected ).to.deep.equal( mA );
+                            expect( getSelected( allModels ) ).to.deep.equal( [mA] );
                         } );
 
                         it( 'no selected event is triggered on the matching model', function () {
@@ -2019,9 +2001,9 @@
                             collection.add( newModels, { at: 0, silent: true } );
                         } );
 
-                        it( 'the model matching the index is not selected', function () {
-                            expect( collection.selected ).not.to.deep.equal( m2 );
-                            expect( getSelected( allModels ) ).not.to.deep.equal( [m2] );
+                        it( 'the model matching the index is selected', function () {
+                            expect( collection.selected ).to.deep.equal( m2 );
+                            expect( getSelected( allModels ) ).to.deep.equal( [m2] );
                         } );
 
                         it( 'no selected event is triggered on the matching model', function () {
@@ -2250,6 +2232,53 @@
 
                 } );
 
+                describe( 'when they are batch-added as the initial models, with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection = new Collection();
+
+                        events = getEventSpies( models.concat( collection ), ["selected", "starred", "picked"] );
+
+                        collection.add( models, { silent: true } );
+                    } );
+
+                    it( 'the first model is starred', function () {
+                        expect( collection.starred ).to.deep.equal( m1 );
+                        expect( getSelected( models, "starred" ) ).to.deep.equal( [m1] );
+                    } );
+
+                    it( 'the last model is picked', function () {
+                        expect( collection.picked ).to.deep.equal( m3 );
+                        expect( getSelected( models, "picked" ) ).to.deep.equal( [m3] );
+                    } );
+
+                    it( 'no model is selected', function () {
+                        expect( collection.selected ).to.be.undefined;
+                        expect( getSelected( models ) ).to.deep.equal( [] );
+                    } );
+
+                    it( 'no selected event is triggered on any model, for any namespace', function () {
+                        expect( events.get( m1, "selected:*" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "selected:*" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "selected:*" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection, for any namespace', function () {
+                        expect( events.get( collection, "select:one:*" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselected event is triggered on any model, for any namespace', function () {
+                        expect( events.get( m1, "deselected:*" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "deselected:*" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "deselected:*" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no deselect:one event is triggered on the collection, for any namespace', function () {
+                        expect( events.get( collection, "deselect:one:*" ) ).not.to.have.been.called;
+                    } );
+
+                } );
+
                 describe( 'when they are passed in on reset', function () {
 
                     beforeEach( function () {
@@ -2309,34 +2338,41 @@
 
                 } );
 
-                it( 'when they are batch-added as the initial models, with the silent option, no selection is made for any namespace', function () {
-                    // The automatic selection can't be triggered when adding models silently.
+                describe( 'when they are passed in on reset, with options.silent enabled', function () {
 
-                    collection = new Collection();
-                    collection.add( models, { silent: true } );
+                    beforeEach( function () {
+                        collection = new Collection();
 
-                    expect( collection.starred ).to.be.undefined;
-                    expect( collection.picked ).to.be.undefined;
-                    expect( collection.selected ).to.be.undefined;
+                        events = getEventSpies( models.concat( collection ), ["selected", "starred", "picked"] );
 
-                    expect( getSelected( models, "starred" ) ).to.be.empty;
-                    expect( getSelected( models, "picked" ) ).to.be.empty;
-                    expect( getSelected( models ) ).to.be.empty;
-                } );
+                        collection.reset( models, { silent: true } );
+                    } );
 
-                it( 'when they are are passed in on reset, with the silent option, no selection is made for any namespace', function () {
-                    // See above. Also, resetting a collection silently is not allowed in model-sharing mode.
+                    it( 'the first model is starred', function () {
+                        expect( collection.starred ).to.deep.equal( m1 );
+                        expect( getSelected( models, "starred" ) ).to.deep.equal( [m1] );
+                    } );
 
-                    collection = new Collection();
-                    collection.reset( models, { silent: true } );
+                    it( 'the last model is picked', function () {
+                        expect( collection.picked ).to.deep.equal( m3 );
+                        expect( getSelected( models, "picked" ) ).to.deep.equal( [m3] );
+                    } );
 
-                    expect( collection.starred ).to.be.undefined;
-                    expect( collection.picked ).to.be.undefined;
-                    expect( collection.selected ).to.be.undefined;
+                    it( 'no model is selected', function () {
+                        expect( collection.selected ).to.be.undefined;
+                        expect( getSelected( models ) ).to.deep.equal( [] );
+                    } );
 
-                    expect( getSelected( models, "starred" ) ).to.be.empty;
-                    expect( getSelected( models, "picked" ) ).to.be.empty;
-                    expect( getSelected( models ) ).to.be.empty;
+                    it( 'no selected event is triggered on any model, for any namespace', function () {
+                        expect( events.get( m1, "selected:*" ) ).not.to.have.been.called;
+                        expect( events.get( m2, "selected:*" ) ).not.to.have.been.called;
+                        expect( events.get( m3, "selected:*" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no select:one event is triggered on the collection, for any namespace', function () {
+                        expect( events.get( collection, "select:one:*" ) ).not.to.have.been.called;
+                    } );
+
                 } );
 
             } );

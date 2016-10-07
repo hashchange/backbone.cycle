@@ -143,11 +143,14 @@
                 return this.behindNoLoop( 1, options );
             },
 
-            selectInitial: function () {
-                // A model gets passed in as first argument during an add event, but not during a reset, thus distinguishing
-                // the two.
+            selectInitial: function ( options ) {
                 var autoSelectAt,
+
+                    // A model gets passed in as first argument during an add event, but not during a reset, thus
+                    // distinguishing the two.
                     isReset = arguments.length && !( arguments[0] instanceof Backbone.Model ),
+                    isSilent = options && options.silent,
+
                     skipFlagPrefix = "_cycle_skipSelectInitial_";
 
                 _.each( this._cycleOpts.autoSelect, function ( autoSelectValue, label ) {
@@ -185,8 +188,13 @@
                             // That can be achieved with the silentLocally flag. It is undocumented and internal to
                             // Backbone.Select, but does exactly that. It acts as `silent: true` only for the initial
                             // select() call, without silencing secondary ones.
+                            //
+                            // Of course, if the call is to be silent anyway, we just pass on the silent flag.
 
-                            selectOptions = isReset ? { label: label, "@bbs:silentLocally": true } : { label: label };
+                            selectOptions = { label: label };
+                            if ( isSilent ) selectOptions.silent = true;
+                            if ( isReset && !isSilent ) selectOptions["@bbs:silentLocally"] = true;
+
                             this.selectAt( autoSelectAt, selectOptions );
 
                         }
@@ -355,6 +363,8 @@
 
                     hostObject.listenTo( hostObject, "add", hostObject.selectInitial );
                     hostObject.listenTo( hostObject, "reset", hostObject.selectInitial );
+                    hostObject.listenTo( hostObject, "@bbs:add:silent", _.partial( hostObject.selectInitial, { silent: true } ) );
+                    hostObject.listenTo( hostObject, "@bbs:reset:silent", _.partial( hostObject.selectInitial, { silent: true } ) );
                 }
 
             }
