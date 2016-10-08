@@ -206,21 +206,37 @@
                 }, this );
             },
 
+            selectOnSilentRemove: function ( model, collection, options ) {
+                // For silent removal, we listen to the @bbs:remove:silent event, rather than the select:one event.
+                // We need to make sure we only respond when the removed model has been selected. We handle each label
+                // separately.
+                var selectionStatus = options && options["@bbs:wasSelected"] || {};
+
+                _.each( selectionStatus, function ( selectedForLabel, label ) {
+                    var _options = _.clone( options );
+                    _options._externalEvent = "remove";
+                    _options.label = label;
+
+                    if ( selectedForLabel ) this.selectOnRemove( model, collection, _options );
+                }, this );
+            },
+
             selectOnRemove: function ( model, collection, options ) {
-                var selectIndex, modelIndex,
+                var selectIndex,
+
+                    modelIndex = options && options.index,
                     label = options && options.label || collection._pickyDefaultLabel,
-                    optionValue = this._cycleOpts.selectIfRemoved && this._cycleOpts.selectIfRemoved[label];
+                    selectIfRemovedValue = this._cycleOpts.selectIfRemoved && this._cycleOpts.selectIfRemoved[label];
 
-                options || ( options = {} );
-                if ( options._externalEvent !== "remove" ) return;
-                if ( !optionValue || !this.length ) return;
-
-                modelIndex = options.index;
+                // We listen to a select:one event for non-silent removals. But we need to filter out select:one events
+                // which have nothing to do with a removal.
+                if ( !( options && options._externalEvent === "remove" ) ) return;
+                if ( !selectIfRemovedValue || !this.length ) return;
 
                 // NB The model is already deselected and removed from the collection (and collection.length is already
                 // adjusted).
-                selectIndex = optionValue.indexOf( "next" ) !== -1 ? modelIndex : modelIndex - 1;
-                if ( optionValue.indexOf( "NoLoop" ) !== -1 ) {
+                selectIndex = selectIfRemovedValue.indexOf( "next" ) !== -1 ? modelIndex : modelIndex - 1;
+                if ( selectIfRemovedValue.indexOf( "NoLoop" ) !== -1 ) {
                     // Limit to available index range, without looping
                     selectIndex = Math.max( Math.min( selectIndex, this.length - 1 ), 0 );
                 }
@@ -339,7 +355,10 @@
                 validateOptionLabelsNotIgnored( hostObject, "selectIfRemoved" );
 
                 // Make the options effective by setting up the corresponding event handlers, and the initial selection state
-                if ( enableSelectIfRemoved ) hostObject.listenTo( hostObject, "deselect:one", hostObject.selectOnRemove );
+                if ( enableSelectIfRemoved ) {
+                    hostObject.listenTo( hostObject, "deselect:one", hostObject.selectOnRemove );
+                    hostObject.listenTo( hostObject, "@bbs:remove:silent", hostObject.selectOnSilentRemove );
+                }
 
                 if ( enableInitialSelection ) {
 

@@ -86,11 +86,48 @@
 
             } );
 
+            describe( 'the removed model has not been selected, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    collection.select( m3 );
+                    collection.remove( m2, { silent: true } );
+                } );
+
+                it( 'the removed model remains deselected', function () {
+                    expect( m2.selected ).to.not.be.true;
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+            } );
+
             describe( 'the removed model has been selected', function () {
 
                 beforeEach( function () {
                     collection.select( m2 );
                     collection.remove( m2 );
+                } );
+
+                // NB The test is only here for consistency, there is no real need to test it here. The case is handled
+                // by Backbone.Select anyway, and tested there.
+
+                it( 'the removed model is deselected', function () {
+                    expect( m2.selected ).to.be.false;
+                } );
+
+                it( 'the selection in the collection is no longer referencing the removed model', function () {
+                    expect( collection.selected ).not.to.deep.equal( m2 );
+                } );
+
+            } );
+
+            describe( 'the removed model has been selected, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    collection.select( m2 );
+                    collection.remove( m2, { silent: true } );
                 } );
 
                 // NB The test is only here for consistency, there is no real need to test it here. The case is handled
@@ -121,9 +158,21 @@
                 expect( collection.selected ).to.deep.equal( m3 );
             } );
 
+            it( 'when an unselected model is removed, with options.silent enabled, the selection in the collection remains unchanged', function () {
+                collection.select( m3 );
+                collection.remove( m2, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m3 );
+            } );
+
             it( 'when the first model of the collection is selected and removed, the last model gets selected', function () {
                 collection.select( m1 );
                 collection.remove( m1 );
+                expect( collection.selected ).to.deep.equal( m3 );
+            } );
+
+            it( 'when the first model of the collection is selected and removed, with options.silent enabled, the last model gets selected', function () {
+                collection.select( m1 );
+                collection.remove( m1, { silent: true } );
                 expect( collection.selected ).to.deep.equal( m3 );
             } );
 
@@ -133,9 +182,21 @@
                 expect( collection.selected ).to.deep.equal( m1 );
             } );
 
+            it( 'when the middle model of the collection is selected and removed, with options.silent enabled, the first model gets selected', function () {
+                collection.select( m2 );
+                collection.remove( m2, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m1 );
+            } );
+
             it( 'when the last model of the collection is selected and removed, the middle model gets selected', function () {
                 collection.select( m3 );
                 collection.remove( m3 );
+                expect( collection.selected ).to.deep.equal( m2 );
+            } );
+
+            it( 'when the last model of the collection is selected and removed, with options.silent enabled, the middle model gets selected', function () {
+                collection.select( m3 );
+                collection.remove( m3, { silent: true } );
                 expect( collection.selected ).to.deep.equal( m2 );
             } );
 
@@ -160,15 +221,33 @@
                 expect( collection.selected ).to.deep.equal( m2 );
             } );
 
+            it( 'when the first model of the collection is selected and removed, with options.silent enabled, the middle model (new first model) gets selected', function () {
+                collection.select( m1 );
+                collection.remove( m1, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m2 );
+            } );
+
             it( 'when the middle model of the collection is selected and removed, the first model gets selected', function () {
                 collection.select( m2 );
                 collection.remove( m2 );
                 expect( collection.selected ).to.deep.equal( m1 );
             } );
 
+            it( 'when the middle model of the collection is selected and removed, with options.silent enabled, the first model gets selected', function () {
+                collection.select( m2 );
+                collection.remove( m2, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m1 );
+            } );
+
             it( 'when the last model of the collection is selected and removed, the middle model gets selected', function () {
                 collection.select( m3 );
                 collection.remove( m3 );
+                expect( collection.selected ).to.deep.equal( m2 );
+            } );
+
+            it( 'when the last model of the collection is selected and removed, with options.silent enabled, the middle model gets selected', function () {
+                collection.select( m3 );
+                collection.remove( m3, { silent: true } );
                 expect( collection.selected ).to.deep.equal( m2 );
             } );
 
@@ -193,15 +272,33 @@
                 expect( collection.selected ).to.deep.equal( m2 );
             } );
 
+            it( 'when the first model of the collection is selected and removed, with options.silent enabled, the middle model gets selected', function () {
+                collection.select( m1 );
+                collection.remove( m1, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m2 );
+            } );
+
             it( 'when the middle model of the collection is selected and removed, the last model gets selected', function () {
                 collection.select( m2 );
                 collection.remove( m2 );
                 expect( collection.selected ).to.deep.equal( m3 );
             } );
 
+            it( 'when the middle model of the collection is selected and removed, with options.silent enabled, the last model gets selected', function () {
+                collection.select( m2 );
+                collection.remove( m2, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m3 );
+            } );
+
             it( 'when the last model of the collection is selected and removed, the first model gets selected', function () {
                 collection.select( m3 );
                 collection.remove( m3 );
+                expect( collection.selected ).to.deep.equal( m1 );
+            } );
+
+            it( 'when the last model of the collection is selected and removed, with options.silent enabled, the first model gets selected', function () {
+                collection.select( m3 );
+                collection.remove( m3, { silent: true } );
                 expect( collection.selected ).to.deep.equal( m1 );
             } );
 
@@ -226,15 +323,33 @@
                 expect( collection.selected ).to.deep.equal( m2 );
             } );
 
+            it( 'when the first model of the collection is selected and removed, with options.silent enabled, the middle model gets selected', function () {
+                collection.select( m1 );
+                collection.remove( m1, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m2 );
+            } );
+
             it( 'when the middle model of the collection is selected and removed, the last model gets selected', function () {
                 collection.select( m2 );
                 collection.remove( m2 );
                 expect( collection.selected ).to.deep.equal( m3 );
             } );
 
+            it( 'when the middle model of the collection is selected and removed, with options.silent enabled, the last model gets selected', function () {
+                collection.select( m2 );
+                collection.remove( m2, { silent: true } );
+                expect( collection.selected ).to.deep.equal( m3 );
+            } );
+
             it( 'when the last model of the collection is selected and removed, the middle model (new last model) gets selected', function () {
                 collection.select( m3 );
                 collection.remove( m3 );
+                expect( collection.selected ).to.deep.equal( m2 );
+            } );
+
+            it( 'when the last model of the collection is selected and removed, with options.silent enabled, the middle model (new last model) gets selected', function () {
+                collection.select( m3 );
+                collection.remove( m3, { silent: true } );
                 expect( collection.selected ).to.deep.equal( m2 );
             } );
 
@@ -300,6 +415,31 @@
 
             } );
 
+            describe( 'When a model is removed which is selected, but not starred or picked, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+                    m4.select( { label: "picked" } );
+
+                    collection.remove( m3, { silent: true } );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection remains unchanged', function () {
+                    expect( collection.starred ).to.deep.equal( m1 );
+                } );
+
+                it( 'the picked model in the collection remains unchanged', function () {
+                    expect( collection.picked ).to.deep.equal( m4 );
+                } );
+
+            } );
+
             describe( 'When a model is removed which is starred, but not selected or picked', function () {
 
                 beforeEach( function () {
@@ -308,6 +448,30 @@
                     m4.select( { label: "picked" } );
 
                     collection.remove( m1 );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m2 );
+                } );
+
+                it( 'the picked model in the collection remains unchanged', function () {
+                    expect( collection.picked ).to.deep.equal( m4 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred, but not selected or picked, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+                    m4.select( { label: "picked" } );
+
+                    collection.remove( m1, { silent: true } );
                 } );
 
                 it( 'the selected model in the collection remains unchanged', function () {
@@ -348,6 +512,30 @@
 
             } );
 
+            describe( 'When a model is removed which is starred and picked, but not selected, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    m2.select( { label: "starred" } );
+                    m2.select( { label: "picked" } );
+                    m3.select();
+
+                    collection.remove( m2, { silent: true } );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m3 );
+                } );
+
+                it( 'the picked model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.picked ).to.deep.equal( m1 );
+                } );
+
+            } );
+
             describe( 'When a model is removed which is starred, picked, and selected', function () {
 
                 beforeEach( function () {
@@ -356,6 +544,31 @@
                     m2.select();
 
                     collection.remove( m2 );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m3 );
+                } );
+
+                it( 'the picked model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.picked ).to.deep.equal( m1 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred, picked, and selected, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    m2.select( { label: "starred" } );
+                    m2.select( { label: "picked" } );
+                    m2.select();
+
+                    collection.remove( m2, { silent: true } );
                 } );
 
                 it( 'the selected model in the collection is left undefined', function () {
@@ -421,6 +634,26 @@
 
             } );
 
+            describe( 'When a model is removed which is selected, but not starred, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+
+                    collection.remove( m3, { silent: true } );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection remains unchanged', function () {
+                    expect( collection.starred ).to.deep.equal( m1 );
+                } );
+
+            } );
+
             describe( 'When a model is removed which is starred, but not selected', function () {
 
                 beforeEach( function () {
@@ -440,6 +673,25 @@
 
             } );
 
+            describe( 'When a model is removed which is starred, but not selected, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    m1.select( { label: "starred" } );
+                    m3.select();
+
+                    collection.remove( m1, { silent: true } );
+                } );
+
+                it( 'the selected model in the collection remains unchanged', function () {
+                    expect( collection.selected ).to.deep.equal( m3 );
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m2 );
+                } );
+
+            } );
+
             describe( 'When a model is removed which is starred and selected', function () {
 
                 beforeEach( function () {
@@ -447,6 +699,26 @@
                     m2.select();
 
                     collection.remove( m2 );
+                } );
+
+                it( 'the selected model in the collection is left undefined', function () {
+                    // For the "selected" label, selectIfRemoved is left at its default, "none".
+                    expect( collection.selected ).to.be.undefined;
+                } );
+
+                it( 'the starred model in the collection is updated according to the selectIfRemoved setting', function () {
+                    expect( collection.starred ).to.deep.equal( m3 );
+                } );
+
+            } );
+
+            describe( 'When a model is removed which is starred and selected, and options.silent has been enabled during removal', function () {
+
+                beforeEach( function () {
+                    m2.select( { label: "starred" } );
+                    m2.select();
+
+                    collection.remove( m2, { silent: true } );
                 } );
 
                 it( 'the selected model in the collection is left undefined', function () {
@@ -503,6 +775,63 @@
 
                 it( 'an error is thrown when the collection is created', function () {
                     expect( function () { new Collection( models ); } ).to.throw( "Conflicting options: Can't define selectIfRemoved behaviour for label \"starred\" because it is ignored in the collection." );
+                } );
+
+            } );
+
+        } );
+
+        describe( 'Events', function () {
+
+            var events;
+
+            describe( 'With selectIfRemoved set to a value other than "none", and a selected model being removed', function () {
+
+                beforeEach( function () {
+                    collection = new Collection( models, { selectIfRemoved: "prevNoLoop" } );
+                    m3.select();
+
+                    events = getEventSpies( models.concat( collection ) );
+                } );
+
+                describe( 'with options.silent not enabled', function () {
+
+                    beforeEach( function () {
+                        collection.remove( m3 );
+                    } );
+
+                    it( 'a "deselected" event is triggered on the removed model (provided that it is not part of another collection)', function () {
+                        expect( events.get( m3, "deselected" ) ).to.have.been.called;
+                    } );
+
+                    it( 'a "selected" event is triggered on the auto-selected model', function () {
+                        expect( events.get( m2, "selected" ) ).to.have.been.called;
+                    } );
+
+                    it( 'a "select:one" event is triggered in the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).to.have.been.called;
+                    } );
+
+                } );
+
+                describe( 'with options.silent enabled', function () {
+
+                    beforeEach( function () {
+                        collection.remove( m3, { silent: true } );
+                    } );
+
+                    it( 'no "deselected" event is triggered on the removed model (even if it is not part of another collection)', function () {
+                        expect( events.get( m3, "deselected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no "selected" event is triggered on the auto-selected model', function () {
+                        expect( events.get( m2, "selected" ) ).not.to.have.been.called;
+                    } );
+
+                    it( 'no "select:one" event is triggered in the collection', function () {
+                        expect( events.get( collection, "select:one" ) ).not.to.have.been.called;
+                    } );
+
                 } );
 
             } );
