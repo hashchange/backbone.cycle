@@ -162,10 +162,25 @@
                 } );
 
                 describe( 'when they are passed to the constructor', function () {
+                    var selectOneEventCounter;
 
                     beforeEach( function () {
+                        var SelfObservingCollection = Collection.extend( {
+
+                            initialize: function ( models ) {
+                                Collection.prototype.initialize.call( this, models );
+
+                                this.listenTo( this, "select:one", function () {
+                                    selectOneEventCounter++;
+                                } )
+                            }
+
+                        } );
+
+                        selectOneEventCounter = 0;
                         sinon.spy( m1, "trigger" );
-                        collection = new Collection( models );
+
+                        collection = new SelfObservingCollection( models );
                     } );
 
                     it( 'the first model is selected', function () {
@@ -173,11 +188,12 @@
                         expect( getSelected( models ) ).to.deep.equal( [m1] );
                     } );
 
-                    // NB Events:
-                    //
-                    // A select:one event is not triggered on the collection. For one, it can't be done because
-                    // initialize is run before the models are added to the collection. Also, it is pointless.
-                    // External listeners can't be attached while the collection is being created.
+                    it( 'no select:one event is triggered in the collection', function () {
+                        // In Backbone.Select, adding models to a collection during instantiation is treated like a
+                        // reset. The collection doesn't fire selection-related events. The autoSelect mechanism should
+                        // behave the same way and not fire a collection event during instantiation.
+                        expect( selectOneEventCounter ).to.equal( 0 );
+                    } );
 
                     it( 'a selected event is triggered on the first model', function () {
                         expect( events.get( m1, "selected" ) ).to.have.been.calledOnce;
