@@ -731,11 +731,8 @@
                         expect( getSelected( models ) ).to.deep.equal( [m3] );
                     } );
 
-                    // NB Events:
-                    //
-                    // A select:one event is not triggered on the collection. For one, it can't be done because
-                    // initialize is run before the models are added to the collection. Also, it is pointless.
-                    // External listeners can't be attached while the collection is being created.
+                    // NB A select:one event is not triggered on the collection. The case is tested in 'autoSelect is
+                    // set to "first"'. See there for rationale.
 
                     it( 'a selected event is triggered on the last model', function () {
                         expect( events.get( m3, "selected" ) ).to.have.been.calledWith( m3, { label: "selected" } );
@@ -1283,11 +1280,8 @@
                             expect( getSelected( models ) ).to.deep.equal( [m2] );
                         } );
 
-                        // NB Events:
-                        //
-                        // A select:one event is not triggered on the collection. For one, it can't be done because
-                        // initialize is run before the models are added to the collection. Also, it is pointless.
-                        // External listeners can't be attached while the collection is being created.
+                        // NB A select:one event is not triggered on the collection. The case is tested in 'autoSelect
+                        // is set to "first"'. See there for rationale.
 
                         it( 'a selected event is triggered on the matching model', function () {
                             expect( events.get( m2, "selected" ) ).to.have.been.calledWith( m2, { label: "selected" } );
@@ -2147,11 +2141,8 @@
                         expect( getSelected( models ) ).to.deep.equal( [] );
                     } );
 
-                    // NB Events:
-                    //
-                    // A select:one event is not triggered on the collection. For one, it can't be done because
-                    // initialize is run before the models are added to the collection. Also, it is pointless.
-                    // External listeners can't be attached while the collection is being created.
+                    // NB A select:one event is not triggered on the collection. The case is tested in 'autoSelect is
+                    // set to "first"'. See there for rationale.
 
                     it( 'a selected event with label "starred" is triggered on the first model (and not on any other)', function () {
                         expect( events.get( m1, "selected" ) ).to.have.been.calledOnce;
@@ -3002,6 +2993,190 @@
 
                 it( 'an error is thrown when the collection is created', function () {
                     expect( function () { new Collection( models ); } ).to.throw( "Conflicting options: Can't define autoSelect behaviour for label \"starred\" because it is ignored in the collection." );
+                } );
+
+            } );
+
+        } );
+
+        describe( 'autoSelect during instantiation with raw model data', function () {
+
+            var modelData, ObservedCollection, SelfObservingCollection, selectOneEventCounter, selectedEventCounter;
+
+            beforeEach( function () {
+
+                SelfObservingCollection = Backbone.Collection.extend( {
+                    model: Backbone.Model.extend( {
+                        initialize: function () {
+                            this.listenTo( this, "selected", function () {
+                                selectedEventCounter[this.get( "number" )]++;
+                            } );
+                        }
+                    } ),
+
+                    initialize: function ( models, options ) {
+                        Backbone.Cycle.SelectableCollection.applyTo( this, models, options );
+
+
+                        this.listenTo( this, "select:one", function () {
+                            selectOneEventCounter++;
+                        } )
+                    }
+                } );
+
+                selectOneEventCounter = 0;
+                selectedEventCounter = {
+                    1: 0,
+                    2: 0,
+                    3: 0
+                };
+
+            } );
+
+            describe( 'the collection constructor receives an array of attribute hashes', function () {
+
+                beforeEach( function () {
+                    ObservedCollection = SelfObservingCollection;
+
+                    modelData = [
+                        { number: 1 },
+                        { number: 2 },
+                        { number: 3 }
+                    ];
+                } );
+
+                describe( 'autoSelect is set to "last", all models are deselected initially. When the collection is created,', function () {
+
+                    beforeEach( function () {
+                        collection = new ObservedCollection( modelData, { autoSelect: "last" } );
+                    } );
+
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.be.an.instanceof( Backbone.Model );
+                        expect( collection.selected.get( "number" ) ).to.equal( 3 );
+                    } );
+
+                    it( 'no select:one event is triggered in the collection', function () {
+                        // In Backbone.Select, adding models to a collection during instantiation is treated like a
+                        // reset. The collection doesn't fire selection-related events. The autoSelect mechanism should
+                        // behave the same way and not fire a collection event during instantiation.
+                        expect( selectOneEventCounter ).to.equal( 0 );
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        // This is a technical limitation. The models are created by Backbone with a silent reset(). As
+                        // they are selected in the process, the selection is silent.
+                        //
+                        // The limitation doesn't really matter very much. It is rare, and tricky, to listen to the
+                        // events of a model which has just come into being (but not impossible to do so; the test here
+                        // does it).
+                        //
+                        // Arguably, it would be more logical if an event were fired. But then again, a reset is
+                        // supposed to be a silent affair, at least within the scope of the collection. Because the
+                        // models come into being in the context of that reset, and are **created** by the collection,
+                        // it is not completely unreasonable to assume that their events are silenced, too. (For
+                        // existing models, selection-related model events DO fire, however.)
+                        expect( selectedEventCounter[3] ).to.equal( 0 );
+                    } );
+
+                } );
+
+            } );
+
+            describe( 'the collection constructor receives an array of raw model data, to be parsed', function () {
+
+                beforeEach( function () {
+
+                    ObservedCollection = SelfObservingCollection.extend( {
+                        parse: function ( modelData ) {
+                            return _.isArray( modelData ) ? _.pluck( modelData, "nested" ) : [modelData.nested];
+                        }
+                    } );
+
+                    modelData = [
+                        { nested: { number: 1 } },
+                        { nested: { number: 2 } },
+                        { nested: { number: 3 } }
+                    ];
+
+                } );
+
+                describe( 'autoSelect is set to "last", all models are deselected initially. When the collection is created,', function () {
+
+                    beforeEach( function () {
+                        collection = new ObservedCollection( modelData, { autoSelect: "last", parse: true } );
+                    } );
+
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.be.an.instanceof( Backbone.Model );
+                        expect( collection.selected.get( "number" ) ).to.equal( 3 );
+                    } );
+
+                    it( 'no select:one event is triggered in the collection', function () {
+                        // In Backbone.Select, adding models to a collection during instantiation is treated like a
+                        // reset. The collection doesn't fire selection-related events. The autoSelect mechanism should
+                        // behave the same way and not fire a collection event during instantiation.
+                        expect( selectOneEventCounter ).to.equal( 0 );
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        // This is a technical limitation. The models are created by Backbone with a silent reset(). As
+                        // they are selected in the process, the selection is silent. See the corresponding test with
+                        // attribute hashes, above, for more.
+                        expect( selectedEventCounter[3] ).to.equal( 0 );
+                    } );
+
+
+                } );
+
+            } );
+
+            describe( 'the collection constructor receives a single object, containing the raw model data which is to be parsed', function () {
+
+                beforeEach( function () {
+
+                    ObservedCollection = SelfObservingCollection.extend( {
+                        parse: function ( modelDataObject ) {
+                            return _.pluck( modelDataObject.modelDataStore, "nested" );
+                        }
+                    } );
+
+                    modelData = {
+                        modelDataStore: [
+                            { nested: { number: 1 } },
+                            { nested: { number: 2 } },
+                            { nested: { number: 3 } }
+                        ]
+                    };
+
+                } );
+
+                describe( 'autoSelect is set to "last", all models are deselected initially. When the collection is created,', function () {
+
+                    beforeEach( function () {
+                        collection = new ObservedCollection( modelData, { autoSelect: "last", parse: true } );
+                    } );
+
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.be.an.instanceof( Backbone.Model );
+                        expect( collection.selected.get( "number" ) ).to.equal( 3 );
+                    } );
+
+                    it( 'no select:one event is triggered in the collection', function () {
+                        // In Backbone.Select, adding models to a collection during instantiation is treated like a
+                        // reset. The collection doesn't fire selection-related events. The autoSelect mechanism should
+                        // behave the same way and not fire a collection event during instantiation.
+                        expect( selectOneEventCounter ).to.equal( 0 );
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        // This is a technical limitation. The models are created by Backbone with a silent reset(). As
+                        // they are selected in the process, the selection is silent. See the corresponding test with
+                        // attribute hashes, above, for more.
+                        expect( selectedEventCounter[3] ).to.equal( 0 );
+                    } );
+
+
                 } );
 
             } );

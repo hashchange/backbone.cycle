@@ -362,20 +362,22 @@
 
                 if ( enableInitialSelection ) {
 
-                    if ( models && models.length ) {
+                    if ( _.isArray( models ) && models.length ) {
 
                         _.each( hostObject._cycleOpts.autoSelect, function ( autoSelectValue, label ) {
+                            var modelForSelection;
 
                             if ( !hostObject[label] ) {
 
                                 autoSelectIndex = getAutoSelectIndex( autoSelectValue, models );
-                                if ( models[autoSelectIndex] ) {
-                                    hostObject[label] = models[autoSelectIndex];
-                                    models[autoSelectIndex].select( { label: label } );
+                                modelForSelection = models[autoSelectIndex];
+
+                                if ( modelForSelection && modelForSelection instanceof Backbone.Model ) {
+                                    hostObject[label] = modelForSelection;
+                                    modelForSelection.select( { label: label } );
                                 }
 
                             }
-
                         } );
 
                     }
