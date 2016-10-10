@@ -34,7 +34,9 @@
 }( this, function ( exports, _, Backbone ) {
     "use strict";
 
-    var CycleMixins = {
+    var originalApplyModelMixin = Backbone.Select.Me.custom.applyModelMixin,
+
+        CycleMixins = {
 
         /**
          * Base component: Backbone.Cycle.Model.
@@ -239,11 +241,11 @@
                 enableInitialSelection = isActiveOption( hostObject._cycleOpts.autoSelect );
                 enableSelectIfRemoved = isActiveOption( hostObject._cycleOpts.selectIfRemoved );
 
-                // Apply the Backbone.Select.One mixin
-                Backbone.Select.One.applyTo( hostObject, models, options );
-
                 // Apply the Cycle.SelectableCollection mixin
                 _.extend( hostObject, CycleMixins.SelectableCollection );
+
+                // Apply the Backbone.Select.One mixin
+                Backbone.Select.One.applyTo( hostObject, models, options );
 
                 // Convert string options into hash format (using the default label as key)
                 normalizeOption( hostObject, "autoSelect" );
@@ -292,6 +294,20 @@
         },
 
         version: "__COMPONENT_VERSION_PLACEHOLDER__"
+
+    };
+
+    // Configuration of Backbone.Select
+
+    Backbone.Select.Me.custom.applyModelMixin = function ( model, collection, options ) {
+
+        if ( collection._cycleType === "Backbone.Cycle.SelectableCollection" ) {
+            Backbone.Cycle.SelectableModel.applyTo( model, options );
+        } else if ( originalApplyModelMixin ) {
+            originalApplyModelMixin( model, collection, options );
+        } else {
+            Backbone.Select.Me.applyTo( model, options );
+        }
 
     };
 

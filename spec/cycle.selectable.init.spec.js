@@ -2999,7 +2999,7 @@
 
         } );
 
-        describe( 'autoSelect during instantiation with raw model data', function () {
+        describe( "autoSelect during instantiation with raw model data, and with models which don't have the SelectableModel mixin applied", function () {
 
             var modelData, ObservedCollection, SelfObservingCollection, selectOneEventCounter, selectedEventCounter;
 
@@ -3079,6 +3079,12 @@
                         expect( selectedEventCounter[3] ).to.equal( 0 );
                     } );
 
+                    it( 'the models of the collection have the SelectableModel mixin applied', function () {
+                        expect( collection.models[0]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[1]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[2]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                    } );
+
                 } );
 
             } );
@@ -3126,6 +3132,11 @@
                         expect( selectedEventCounter[3] ).to.equal( 0 );
                     } );
 
+                    it( 'the models of the collection have the SelectableModel mixin applied', function () {
+                        expect( collection.models[0]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[1]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[2]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                    } );
 
                 } );
 
@@ -3176,6 +3187,73 @@
                         expect( selectedEventCounter[3] ).to.equal( 0 );
                     } );
 
+                    it( 'the models of the collection have the SelectableModel mixin applied', function () {
+                        expect( collection.models[0]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[1]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[2]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                    } );
+
+                } );
+
+            } );
+
+            describe( "the collection constructor receives an array of models which don't have the SelectableModel mixin applied", function () {
+
+                beforeEach( function () {
+                    ObservedCollection = SelfObservingCollection;
+
+                    modelData = [
+                        new Backbone.Model( { number: 1 } ),
+                        new Backbone.Model( { number: 2 } ),
+                        new Backbone.Model( { number: 3 } )
+                    ];
+                } );
+
+                describe( 'autoSelect is set to "last", all models are deselected initially. When the collection is created,', function () {
+
+                    beforeEach( function () {
+                        collection = new ObservedCollection( modelData, { autoSelect: "last" } );
+                    } );
+
+                    it( 'the last model is selected', function () {
+                        expect( collection.selected ).to.be.an.instanceof( Backbone.Model );
+                        expect( collection.selected.get( "number" ) ).to.equal( 3 );
+                    } );
+
+                    it( 'no select:one event is triggered in the collection', function () {
+                        // In Backbone.Select, adding models to a collection during instantiation is treated like a
+                        // reset. The collection doesn't fire selection-related events. The autoSelect mechanism should
+                        // behave the same way and not fire a collection event during instantiation.
+                        expect( selectOneEventCounter ).to.equal( 0 );
+                    } );
+
+                    it( 'no selected event is triggered on the last model', function () {
+                        // This is a technical limitation. The models are created by Backbone with a silent reset(). As
+                        // they are selected in the process, the selection is silent.
+                        //
+                        // The limitation doesn't really matter very much. It is rare, and tricky, to listen to the
+                        // events of a model which has just come into being (but not impossible to do so; the test here
+                        // does it).
+                        //
+                        // Arguably, it would be more logical if an event were fired. But then again, a reset is
+                        // supposed to be a silent affair, at least within the scope of the collection. Because the
+                        // models come into being in the context of that reset, and are **created** by the collection,
+                        // it is not completely unreasonable to assume that their events are silenced, too. (For
+                        // existing models, selection-related model events DO fire, however.)
+                        expect( selectedEventCounter[3] ).to.equal( 0 );
+                    } );
+
+                    it( 'the input models have become the models of the collection', function () {
+                        expect( collection.models[0] ).to.equal( modelData[0] );
+                        expect( collection.models[1] ).to.equal( modelData[1] );
+                        expect( collection.models[2] ).to.equal( modelData[2] );
+                    } );
+
+                    it( 'the models of the collection have the SelectableModel mixin applied', function () {
+                        expect( collection.models[0]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[1]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                        expect( collection.models[2]._cycleType ).to.equal( "Backbone.Cycle.SelectableModel" );
+                    } );
 
                 } );
 
@@ -3217,6 +3295,216 @@
                 } );
 
             } );
+        } );
+
+        describe( 'Automatic mixin application in ordinary Backbone.Select collections', function () {
+
+            describe( 'In a Select.One collection', function () {
+                var collection, Collection;
+
+                beforeEach( function () {
+                    Collection = Backbone.Collection.extend( {
+                        initialize: function ( models, options ) {
+                            Backbone.Select.One.applyTo( this, models, options );
+                        }
+                    } );
+                } );
+
+                afterEach( function () {
+                    collection.close();
+                } );
+
+                describe( 'when the collection is created with an array of attribute hashes', function () {
+
+                    beforeEach( function () {
+                        var modelData = [
+                                { number: 1 },
+                                { number: 2 },
+                                { number: 3 }
+                            ];
+
+                        collection = new Collection( modelData );
+                    } );
+
+                    it( 'the Backbone.Select.Me mixin is applied', function () {
+                        expect( collection.models[0]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[1]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[2]._pickyType ).to.equal( "Backbone.Select.Me" );
+                    } );
+
+                    it( 'the SelectableModel mixin has not been applied', function () {
+                        expect( collection.models[0]._cycleType ).to.be.undefined;
+                        expect( collection.models[1]._cycleType ).to.be.undefined;
+                        expect( collection.models[2]._cycleType ).to.be.undefined;
+                    } );
+
+                } );
+
+                describe( 'when the collection is created with raw model data, to be parsed', function () {
+
+                    beforeEach( function () {
+                        var modelData = {
+                                modelDataStore: [
+                                    { nested: { number: 1 } },
+                                    { nested: { number: 2 } },
+                                    { nested: { number: 3 } }
+                                ]
+                            },
+
+                            ParsingCollection = Collection.extend( {
+                                parse: function ( modelDataObject ) {
+                                    return _.pluck( modelDataObject.modelDataStore, "nested" );
+                                }
+                            } );
+
+                        collection = new ParsingCollection( modelData, { parse: true } );
+                    } );
+
+                    it( 'the Backbone.Select.Me mixin is applied', function () {
+                        expect( collection.models[0]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[1]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[2]._pickyType ).to.equal( "Backbone.Select.Me" );
+                    } );
+
+                    it( 'the SelectableModel mixin has not been applied', function () {
+                        expect( collection.models[0]._cycleType ).to.be.undefined;
+                        expect( collection.models[1]._cycleType ).to.be.undefined;
+                        expect( collection.models[2]._cycleType ).to.be.undefined;
+                    } );
+
+                } );
+
+                describe( "when the collection is created with an array of models which don't have a mixin applied", function () {
+
+                    beforeEach( function () {
+                        var modelData = [
+                            new Backbone.Model( { number: 1 } ),
+                            new Backbone.Model( { number: 2 } ),
+                            new Backbone.Model( { number: 3 } )
+                        ];
+
+                        collection = new Collection( modelData );
+                    } );
+
+                    it( 'the Backbone.Select.Me mixin is applied', function () {
+                        expect( collection.models[0]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[1]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[2]._pickyType ).to.equal( "Backbone.Select.Me" );
+                    } );
+
+                    it( 'the SelectableModel mixin has not been applied', function () {
+                        expect( collection.models[0]._cycleType ).to.be.undefined;
+                        expect( collection.models[1]._cycleType ).to.be.undefined;
+                        expect( collection.models[2]._cycleType ).to.be.undefined;
+                    } );
+
+                } );
+
+            } );
+
+            describe( 'In a Select.Many collection', function () {
+                var collection, Collection;
+
+                beforeEach( function () {
+                    Collection = Backbone.Collection.extend( {
+                        initialize: function ( models, options ) {
+                            Backbone.Select.Many.applyTo( this, models, options );
+                        }
+                    } );
+                } );
+
+                afterEach( function () {
+                    collection.close();
+                } );
+
+                describe( 'when the collection is created with an array of attribute hashes', function () {
+
+                    beforeEach( function () {
+                        var modelData = [
+                                { number: 1 },
+                                { number: 2 },
+                                { number: 3 }
+                            ];
+
+                        collection = new Collection( modelData );
+                    } );
+
+                    it( 'the Backbone.Select.Me mixin is applied', function () {
+                        expect( collection.models[0]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[1]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[2]._pickyType ).to.equal( "Backbone.Select.Me" );
+                    } );
+
+                    it( 'the SelectableModel mixin has not been applied', function () {
+                        expect( collection.models[0]._cycleType ).to.be.undefined;
+                        expect( collection.models[1]._cycleType ).to.be.undefined;
+                        expect( collection.models[2]._cycleType ).to.be.undefined;
+                    } );
+
+                } );
+
+                describe( 'when the collection is created with raw model data, to be parsed', function () {
+
+                    beforeEach( function () {
+                        var modelData = {
+                                modelDataStore: [
+                                    { nested: { number: 1 } },
+                                    { nested: { number: 2 } },
+                                    { nested: { number: 3 } }
+                                ]
+                            },
+
+                            ParsingCollection = Collection.extend( {
+                                parse: function ( modelDataObject ) {
+                                    return _.pluck( modelDataObject.modelDataStore, "nested" );
+                                }
+                            } );
+
+                        collection = new ParsingCollection( modelData, { parse: true } );
+                    } );
+
+                    it( 'the Backbone.Select.Me mixin is applied', function () {
+                        expect( collection.models[0]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[1]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[2]._pickyType ).to.equal( "Backbone.Select.Me" );
+                    } );
+
+                    it( 'the SelectableModel mixin has not been applied', function () {
+                        expect( collection.models[0]._cycleType ).to.be.undefined;
+                        expect( collection.models[1]._cycleType ).to.be.undefined;
+                        expect( collection.models[2]._cycleType ).to.be.undefined;
+                    } );
+
+                } );
+
+                describe( "when the collection is created with an array of models which don't have a mixin applied", function () {
+
+                    beforeEach( function () {
+                        var modelData = [
+                            new Backbone.Model( { number: 1 } ),
+                            new Backbone.Model( { number: 2 } ),
+                            new Backbone.Model( { number: 3 } )
+                        ];
+
+                        collection = new Collection( modelData );
+                    } );
+
+                    it( 'the Backbone.Select.Me mixin is applied', function () {
+                        expect( collection.models[0]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[1]._pickyType ).to.equal( "Backbone.Select.Me" );
+                        expect( collection.models[2]._pickyType ).to.equal( "Backbone.Select.Me" );
+                    } );
+
+                    it( 'the SelectableModel mixin has not been applied', function () {
+                        expect( collection.models[0]._cycleType ).to.be.undefined;
+                        expect( collection.models[1]._cycleType ).to.be.undefined;
+                        expect( collection.models[2]._cycleType ).to.be.undefined;
+                    } );
+
+                } );
+
+            } );
+
         } );
 
     } );
