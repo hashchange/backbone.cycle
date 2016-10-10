@@ -1,12 +1,47 @@
-// Backbone.Cycle, v2.1.4
+// Backbone.Cycle, v3.0.0
 // Copyright (c) 2014-2016 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.cycle
 
-;( function( Backbone, _ ) {
+;( function ( root, factory ) {
     "use strict";
 
-    var CycleMixins = {
+    // UMD for a Backbone plugin. Supports AMD, Node.js, CommonJS and globals.
+    //
+    // - Code lives in the Backbone namespace.
+    // - The module does not export a meaningful value.
+    // - The module does not create a global.
+
+    var supportsExports = typeof exports === "object" && exports && !exports.nodeType && typeof module === "object" && module && !module.nodeType;
+
+    // AMD:
+    // - Some AMD build optimizers like r.js check for condition patterns like the AMD check below, so keep it as is.
+    // - Check for `exports` after `define` in case a build optimizer adds an `exports` object.
+    // - The AMD spec requires the dependencies to be an array **literal** of module IDs. Don't use a variable there,
+    //   or optimizers may fail.
+    if ( typeof define === "function" && typeof define.amd === "object" && define.amd ) {
+
+        // AMD module
+        define( [ "exports", "underscore", "backbone", "backbone.select" ], factory );
+
+    } else if ( supportsExports ) {
+
+        // Node module, CommonJS module
+        factory( exports, require( "underscore" ), require( "backbone" ), require( "backbone.select" ) );
+
+    } else  {
+
+        // Global (browser or Rhino)
+        factory( {}, _, Backbone );
+
+    }
+
+}( this, function ( exports, _, Backbone ) {
+    "use strict";
+
+    var originalApplyModelMixin = Backbone.Select.Me.custom.applyModelMixin,
+
+        CycleMixins = {
 
         /**
          * Base component: Backbone.Cycle.Model.
@@ -115,83 +150,6 @@
                 return this.behindNoLoop( 1, options );
             },
 
-            selectInitial: function () {
-                // A model gets passed in as first argument during an add event, but not during a reset, thus distinguishing
-                // the two.
-                var autoSelectAt,
-                    isReset = arguments.length && !( arguments[0] instanceof Backbone.Model ),
-                    skipFlagPrefix = "_cycle_skipSelectInitial_";
-
-                _.each( this._cycleOpts.autoSelect, function ( autoSelectValue, label ) {
-                    var selectOptions,
-                        skipFlag = skipFlagPrefix + label;
-
-                    if ( this.length && !this[label] && !this[skipFlag] ) {
-                        autoSelectAt = getAutoSelectIndex( autoSelectValue, this.models );
-
-                        if ( !isReset ) {
-
-                            // Check if there is a selected model elsewhere in the collection - meaning that a batch of
-                            // models has been added and one of them had already been selected beforehand.
-                            //
-                            // (All models passed to .add() are added to the collection before the first `add` event is
-                            // fired. Ie, when the code here is running, this.models is already up to date.)
-                            //
-                            // The add events are now fired one by one, and the Backbone.Select mixin will update the
-                            // collection when the turn of the selected model has come. Don't do an auto selection here,
-                            // then.
-                            //
-                            // (And set a flag for the remaining add events, so the expensive search for the selected
-                            // model does not get repeated.)
-
-                            if ( this.find( function ( model ) { return model[label]; } ) ) this[skipFlag] = true;
-                        }
-
-
-                        if ( !this[skipFlag] && at_noLoop( autoSelectAt, this ) ) {
-
-                            // During a reset, the select:one event has to be silenced, but only for the collection
-                            // being reset. Events on the model, and in other collections sharing the model, must fire
-                            // as usual.
-                            //
-                            // That can be achieved with the _silentLocally flag. It is undocumented and internal to
-                            // Backbone.Select, but does exactly that. It acts as `silent: true` only for the initial
-                            // select() call, without silencing secondary ones.
-
-                            selectOptions = isReset ? { label: label, _silentLocally: true } : { label: label };
-                            this.selectAt( autoSelectAt, selectOptions );
-
-                        }
-                    }
-
-                    // Delete the skip flag if necessary, once Backbone.Select has updated the selection
-                    if ( this[label] && this[skipFlag] ) delete this[skipFlag];
-
-                }, this );
-            },
-
-            selectOnRemove: function ( model, collection, options ) {
-                var selectIndex, modelIndex,
-                    label = options && options.label || collection._pickyDefaultLabel,
-                    optionValue = this._cycleOpts.selectIfRemoved && this._cycleOpts.selectIfRemoved[label];
-
-                options || ( options = {} );
-                if ( options._externalEvent !== "remove" ) return;
-                if ( !optionValue || !this.length ) return;
-
-                modelIndex = options.index;
-
-                // NB The model is already deselected and removed from the collection (and collection.length is already
-                // adjusted).
-                selectIndex = optionValue.indexOf( "next" ) !== -1 ? modelIndex : modelIndex - 1;
-                if ( optionValue.indexOf( "NoLoop" ) !== -1 ) {
-                    // Limit to available index range, without looping
-                    selectIndex = Math.max( Math.min( selectIndex, this.length - 1 ), 0 );
-                }
-
-                this.select( at_looped( selectIndex, this ), options );
-            },
-
             _cycleType: "Backbone.Cycle.SelectableCollection"
 
         }
@@ -264,7 +222,7 @@
              */
             applyTo: function ( hostObject, models, options ) {
 
-                var enableInitialSelection, enableSelectIfRemoved, enableModelSharing, autoSelectIndex;
+                var enableInitialSelection, enableSelectIfRemoved, autoSelectIndex;
 
                 // Enforcing the presence of the models argument. (The rest of the arg validation is handled by
                 // Backbone.Select.One.)
@@ -287,13 +245,12 @@
 
                 enableInitialSelection = isActiveOption( hostObject._cycleOpts.autoSelect );
                 enableSelectIfRemoved = isActiveOption( hostObject._cycleOpts.selectIfRemoved );
-                enableModelSharing = options.enableModelSharing || enableInitialSelection || enableSelectIfRemoved;
-
-                // Apply the Backbone.Select.One mixin
-                Backbone.Select.One.applyTo( hostObject, models, _.extend( {}, options, { enableModelSharing: enableModelSharing } ) );
 
                 // Apply the Cycle.SelectableCollection mixin
                 _.extend( hostObject, CycleMixins.SelectableCollection );
+
+                // Apply the Backbone.Select.One mixin
+                Backbone.Select.One.applyTo( hostObject, models, options );
 
                 // Convert string options into hash format (using the default label as key)
                 normalizeOption( hostObject, "autoSelect" );
@@ -304,42 +261,168 @@
                 validateOptionLabelsNotIgnored( hostObject, "selectIfRemoved" );
 
                 // Make the options effective by setting up the corresponding event handlers, and the initial selection state
-                if ( enableSelectIfRemoved ) hostObject.listenTo( hostObject, "deselect:one", hostObject.selectOnRemove );
+                if ( enableSelectIfRemoved ) {
+                    hostObject.listenTo( hostObject, "deselect:one", selectOnRemove );
+                    hostObject.listenTo( hostObject, "@bbs:remove:silent", selectOnSilentRemove );
+                }
 
                 if ( enableInitialSelection ) {
 
-                    if ( models && models.length ) {
+                    if ( _.isArray( models ) && models.length ) {
 
                         _.each( hostObject._cycleOpts.autoSelect, function ( autoSelectValue, label ) {
+                            var modelForSelection;
 
                             if ( !hostObject[label] ) {
 
                                 autoSelectIndex = getAutoSelectIndex( autoSelectValue, models );
-                                if ( models[autoSelectIndex] ) {
-                                    hostObject[label] = models[autoSelectIndex];
-                                    models[autoSelectIndex].select( { label: label } );
+                                modelForSelection = models[autoSelectIndex];
+
+                                if ( modelForSelection && modelForSelection instanceof Backbone.Model ) {
+                                    hostObject[label] = modelForSelection;
+                                    modelForSelection.select( { label: label } );
                                 }
 
                             }
-
                         } );
 
                     }
 
-                    hostObject.listenTo( hostObject, "add", hostObject.selectInitial );
-                    hostObject.listenTo( hostObject, "reset", hostObject.selectInitial );
+                    hostObject.listenTo( hostObject, "add", selectInitial );
+                    hostObject.listenTo( hostObject, "reset", selectInitial );
+                    hostObject.listenTo( hostObject, "@bbs:add:silent", _.partial( selectInitial, { silent: true } ) );
+                    hostObject.listenTo( hostObject, "@bbs:reset:silent", _.partial( selectInitial, { silent: true } ) );
                 }
 
             }
 
         },
 
-        version: "2.1.4"
+        version: "3.0.0"
 
     };
 
+    // Configuration of Backbone.Select
 
-    // Helper function
+    Backbone.Select.Me.custom.applyModelMixin = function ( model, collection, options ) {
+
+        if ( collection._cycleType === "Backbone.Cycle.SelectableCollection" ) {
+            Backbone.Cycle.SelectableModel.applyTo( model, options );
+        } else if ( originalApplyModelMixin ) {
+            originalApplyModelMixin( model, collection, options );
+        } else {
+            Backbone.Select.Me.applyTo( model, options );
+        }
+
+    };
+
+    // Event handlers
+
+    function selectInitial ( options ) {
+        // NB The function is always called in the context of a collection, with `this` bound to the collection.
+        var autoSelectAt,
+
+            // A model gets passed in as first argument during an add event, but not during a reset, thus
+            // distinguishing the two.
+            isReset = arguments.length && !( arguments[0] instanceof Backbone.Model ),
+            isSilent = options && options.silent,
+
+            skipFlagPrefix = "_cycle_skipSelectInitial_";
+
+        _.each( this._cycleOpts.autoSelect, function ( autoSelectValue, label ) {                   // jshint ignore:line
+            var selectOptions,
+                skipFlag = skipFlagPrefix + label;
+
+            if ( this.length && !this[label] && !this[skipFlag] ) {
+                autoSelectAt = getAutoSelectIndex( autoSelectValue, this.models );
+
+                if ( !isReset ) {
+
+                    // Check if there is a selected model elsewhere in the collection - meaning that a batch of
+                    // models has been added and one of them had already been selected beforehand.
+                    //
+                    // (All models passed to .add() are added to the collection before the first `add` event is
+                    // fired. Ie, when the code here is running, this.models is already up to date.)
+                    //
+                    // The add events are now fired one by one, and the Backbone.Select mixin will update the
+                    // collection when the turn of the selected model has come. Don't do an auto selection here,
+                    // then.
+                    //
+                    // (And set a flag for the remaining add events, so the expensive search for the selected
+                    // model does not get repeated.)
+
+                    if ( this.find( function ( model ) { return model[label]; } ) ) this[skipFlag] = true;
+                }
+
+
+                if ( !this[skipFlag] && at_noLoop( autoSelectAt, this ) ) {
+
+                    // During a reset, the select:one event has to be silenced, but only for the collection
+                    // being reset. Events on the model, and in other collections sharing the model, must fire
+                    // as usual.
+                    //
+                    // That can be achieved with the silentLocally flag. It is undocumented and internal to
+                    // Backbone.Select, but does exactly that. It acts as `silent: true` only for the initial
+                    // select() call, without silencing secondary ones.
+                    //
+                    // Of course, if the call is to be silent anyway, we just pass on the silent flag.
+
+                    selectOptions = { label: label };
+                    if ( isSilent ) selectOptions.silent = true;
+                    if ( isReset && !isSilent ) selectOptions["@bbs:silentLocally"] = true;
+
+                    this.selectAt( autoSelectAt, selectOptions );
+
+                }
+            }
+
+            // Delete the skip flag if necessary, once Backbone.Select has updated the selection
+            if ( this[label] && this[skipFlag] ) delete this[skipFlag];
+
+        }, this );                                                                                  // jshint ignore:line
+    }
+
+    function selectOnRemove ( model, collection, options ) {
+        var selectIndex,
+
+            modelIndex = options && options.index,
+            label = options && options.label || collection._pickyDefaultLabel,
+            selectIfRemovedValue = collection._cycleOpts.selectIfRemoved && collection._cycleOpts.selectIfRemoved[label];
+
+        // We listen to a select:one event for non-silent removals. But we need to filter out select:one events
+        // which have nothing to do with a removal.
+        if ( !( options && options._externalEvent === "remove" ) ) return;
+        if ( !selectIfRemovedValue || !collection.length ) return;
+
+        // NB The model is already deselected and removed from the collection (and collection.length is already
+        // adjusted).
+        selectIndex = selectIfRemovedValue.indexOf( "next" ) !== -1 ? modelIndex : modelIndex - 1;
+        if ( selectIfRemovedValue.indexOf( "NoLoop" ) !== -1 ) {
+            // Limit to available index range, without looping
+            selectIndex = Math.max( Math.min( selectIndex, collection.length - 1 ), 0 );
+        }
+
+        collection.select( at_looped( selectIndex, collection ), options );
+    }
+
+    function selectOnSilentRemove ( model, collection, options ) {
+        // For silent removal, we listen to the @bbs:remove:silent event, rather than the select:one event.
+        // We need to make sure we only respond when the removed model has been selected. We handle each label
+        // separately.
+        var selectionStatus = options && options["@bbs:wasSelected"] || {};
+
+        _.each( selectionStatus, function ( selectedForLabel, label ) {
+            var _options = _.clone( options );
+            _options._externalEvent = "remove";
+            _options.label = label;
+
+            if ( selectedForLabel ) selectOnRemove( model, collection, _options );
+        } );
+    }
+
+
+    // Helper functions
+
     function at_looped ( index, collection ) {
         var inRange = index % collection.length;
         if ( inRange < 0 ) inRange = collection.length + inRange;  // in fact subtracting from length because inRange < 0
@@ -423,4 +506,13 @@
         entity._cycleOpts[optionName] = hash;
     }
 
-}( Backbone, _ ));
+
+    // Module return value
+    // -------------------
+    //
+    // A return value may be necessary for AMD to detect that the module is loaded. It ony exists for that reason and is
+    // purely symbolic. Don't use it in client code. The functionality of this module lives in the Backbone namespace.
+    exports.info = "Backbone.Cycle has loaded. Don't use the exported value of the module. Its functionality is available inside the Backbone namespace.";
+
+} ) );
+
