@@ -565,7 +565,7 @@ Other:
 
 MIT.
 
-Copyright (c) 2014-2016 Michael Heim.
+Copyright (c) 2014-2017 Michael Heim.
 
 [dist-dev]: https://raw.github.com/hashchange/backbone.cycle/master/dist/backbone.cycle.js "backbone.cycle.js"
 [dist-prod]: https://raw.github.com/hashchange/backbone.cycle/master/dist/backbone.cycle.min.js "backbone.cycle.min.js"
