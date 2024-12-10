@@ -6,8 +6,6 @@ Backbone.Cycle is a set of mixins for [Backbone][] models and collections. Model
 
 With Backbone.Cycle options, you can enable predefined, common [behaviours][setup-options], like always selecting the first item [in a new collection][autoselect-option], or selecting an adjacent model when a selected model [is removed][selectifremoved-option]. Models can be shared across multiple collections, and selections are synced among them.
 
-If you are a happy user of this project already, you can support its development by [donating to it][donations]. You absolutely don't have to, of course, but perhaps it is something you [might actually want to do][donations].
-
 ##### Backbone.Cycle vs Backbone.Select
 
 Backbone.Cycle is built on top of [Backbone.Select][]. The selection features are identical. Backbone.Cycle adds navigation methods and options.
@@ -466,18 +464,6 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
-## Facilitating development
-
-To my own surprise, [a kind soul][donations-idea] wanted to donate to one of my projects, but there hadn't been a link. [Now there is.][donations-paypal-link]
-
-Please don't feel obliged in the slightest. The license here is [MIT][license], and so it's free. That said, if you do want to support the maintenance and development of this component, or any of my [other open-source projects][hashchange-projects-overview], I _am_ thankful for your contribution.
-
-Naturally, these things don't pay for themselves – not even remotely. The components I write aim to be well tested, performant, and reliable. These qualities may not seem particularly fascinating, but I put a lot of emphasis on them because they make all the difference in production. They are also rather costly to maintain, time-wise.
-
-That's why donations are welcome, and be it as nod of appreciation to keep spirits up. [Thank you!][donations-paypal-link]
-
-[![Donate with Paypal][donations-paypal-button]][donations-paypal-link]
-
 ## Release notes
 
 ### v3.0.0
@@ -565,7 +551,7 @@ Other:
 
 MIT.
 
-Copyright (c) 2014-2017 Michael Heim.
+Copyright (c) 2014-2024 Michael Heim.
 
 [dist-dev]: https://raw.github.com/hashchange/backbone.cycle/master/dist/backbone.cycle.js "backbone.cycle.js"
 [dist-prod]: https://raw.github.com/hashchange/backbone.cycle/master/dist/backbone.cycle.min.js "backbone.cycle.min.js"
@@ -630,9 +616,5 @@ Copyright (c) 2014-2017 Michael Heim.
 [demo-jsbin]: http://jsbin.com/johoha/4/edit?js,output "Backbone.Cycle: Demo (AMD) – JSBin"
 [demo-codepen]: http://codepen.io/hashchange/pen/OVeovy "Backbone.Cycle: Demo (AMD) – Codepen"
 
-[donations]: #facilitating-development "Facilitating development"
-[donations-idea]: https://github.com/hashchange/jquery.documentsize/issues/1 "jQuery.documentSize, issue #1: Thank you!"
-[donations-paypal-link]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PSL6T25YM7HLS "Donate with Paypal"
-[donations-paypal-button]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif "Donate with Paypal"
 [license]: #license "License"
 [hashchange-projects-overview]: http://hashchange.github.io/ "Hacking the front end: Backbone, Marionette, jQuery and the DOM. An overview of open-source projects by @hashchange."
